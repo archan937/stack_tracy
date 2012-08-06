@@ -1,0 +1,5 @@
+= StackTracy CHANGELOG
+
+== Version 0.1.0 (August xx, 2012)
+
+* Initial release

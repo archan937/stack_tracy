@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+`cd ext/stack_tracy && ruby extconf.rb`
+`cd ext/stack_tracy && make`
+
+require "rubygems"
+require "bundler"
+
+Bundler.require :gem_default, :gem_development
+
+puts "Loading development environment (StackTracy #{StackTracy::VERSION})"
+
+Pry.start
