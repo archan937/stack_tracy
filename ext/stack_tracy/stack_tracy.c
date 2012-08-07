@@ -1,5 +1,20 @@
 #include "stack_tracy.h"
 
+uint64_t nsec() {
+  #ifdef __MACH__
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    return (mts.tv_sec * 1e9) + mts.tv_nsec;
+  #else
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return (ts.tv_sec * 1e9) + ts.tv_nsec;
+  #endif
+}
+
 static const char *event_name(rb_event_flag_t event) {
   switch (event) {
     case RUBY_EVENT_LINE:
@@ -35,7 +50,6 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
 {
   bool singleton = false;
   EventInfo info;
-  struct timespec time;
 
   if (event == RUBY_EVENT_CALL || event == RUBY_EVENT_C_CALL) {
     trace = true;
@@ -51,7 +65,6 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
   }
   #endif
 
-  singleton = false;
   if (klass) {
     if (TYPE(klass) == T_ICLASS) {
       klass = RBASIC(klass)->klass;
@@ -71,17 +84,7 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
   info.singleton = singleton;
   info.object = rb_class2name(singleton ? self : klass);
   info.method = rb_id2name(id);
-
-  struct timespec ts;
-  #if defined(_POSIX_TIMERS) && _POSIX_TIMERS > 0
-  clock_gettime(CLOCK_REALTIME, &ts);
-  #else
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  ts.tv_sec = tv.tv_sec;
-  ts.tv_nsec = tv.tv_usec * 1000;
-  #endif
-  info.timestamp = (uint) ts.tv_nsec;
+  info.nsec = nsec();
 
   size = size + 1;
   stack = (EventInfo *) realloc (stack, size * sizeof(EventInfo));
@@ -115,7 +118,7 @@ VALUE stack_tracy_stop(VALUE self) {
     if (stack[i].method != NULL) {
       rb_iv_set(info, "@method", rb_str_new2(stack[i].method));
     }
-    rb_iv_set(info, "@timestamp", rb_int_new(stack[i].timestamp));
+    rb_iv_set(info, "@nsec", rb_int_new(stack[i].nsec));
 
     rb_ary_push(data, info);
   }

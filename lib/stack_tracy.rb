@@ -14,7 +14,7 @@ module StackTracy
         call_stack << [lines.size - 1, event_info]
       elsif event_info.return? && call_stack.last && event_info.matches?(call_stack.last.last)
         call_stack.pop.tap do |(line, match)|
-          lines[line] << " <#{"%.6f" % ((event_info.time - match.time) / 1000000000.0)}>"
+          lines[line] << " <#{"%.6f" % (event_info - match)}>"
         end
       end
     end

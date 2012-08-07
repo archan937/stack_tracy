@@ -2,10 +2,14 @@
 #define STACK_TRACY_H
 
 #include <ruby.h>
-#include <time.h>
 #include <stdbool.h>
+#include <time.h>
+#include <sys/time.h>
 
-#define BILLION 1000000000L;
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 typedef struct event_info_t {
   char const *event;
@@ -14,15 +18,17 @@ typedef struct event_info_t {
   bool singleton;
   char const *object;
   char const *method;
-  uint timestamp;
+  uint64_t nsec;
 } EventInfo;
 
 static EventInfo *stack;
 static int size;
 static bool trace;
+
 static VALUE mStackTracy;
 static VALUE cEventInfo;
 
+static uint64_t nsec();
 static const char *event_name(rb_event_flag_t event);
 
 #if defined(RB_EVENT_HOOKS_HAVE_CALLBACK_DATA) || defined(RUBY_EVENT_VM)
