@@ -97,7 +97,10 @@ VALUE stack_tracy_start(VALUE self) {
   #else
     rb_add_event_hook(stack_tracy_trap, RUBY_EVENT_CALL | RUBY_EVENT_C_CALL | RUBY_EVENT_RETURN | RUBY_EVENT_C_RETURN);
   #endif
+
   size = 0, trace = false;
+
+  return Qnil;
 }
 
 VALUE stack_tracy_stop(VALUE self) {
@@ -125,6 +128,8 @@ VALUE stack_tracy_stop(VALUE self) {
 
   rb_funcall(mStackTracy, rb_intern("send"), 2, rb_str_new2("store"), data);
   rb_funcall(mStackTracy, rb_intern("print"), 0);
+
+  return Qnil;
 }
 
 void Init_stack_tracy() {
