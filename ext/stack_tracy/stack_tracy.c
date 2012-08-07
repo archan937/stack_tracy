@@ -107,7 +107,7 @@ VALUE stack_tracy_stop(VALUE self) {
   rb_remove_event_hook(stack_tracy_trap);
   data = rb_ary_new();
 
-  for (i = 0; i < size; i++) {
+  for (i = 0; i < size - 1; i++) {
     info = rb_funcall(cEventInfo, rb_intern("new"), 0);
 
     rb_iv_set(info, "@event", rb_str_new2(stack[i].event));
