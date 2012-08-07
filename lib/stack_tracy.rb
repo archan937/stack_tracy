@@ -6,8 +6,7 @@ module StackTracy
   extend self
 
   def print(*only)
-    call_stack, lines = [], []
-    only = only.flatten
+    call_stack, lines, only = [], [], only.flatten
     stack_trace.each do |event_info|
       next unless process?(event_info, only)
       if event_info.call?
@@ -27,7 +26,7 @@ private
 
   def process?(event_info, only)
     return true if only.empty?
-    only.any?{|x| event_info.to_s.include? x}
+    only.any?{|x| event_info.matches?(x)}
   end
 
   def stack_trace
