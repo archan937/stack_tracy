@@ -19,7 +19,6 @@ module StackTracy
       end
     end
     puts lines
-    nil
   end
 
 private

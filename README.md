@@ -4,7 +4,9 @@ Investigate and detect slow methods within your stack trace
 
 ## Introduction
 
-This gem ...!
+StackTracy is created for simply investigating your stack trace for called methods and its corresponding duration. You can filter modules / classes / methods within the output tree.
+
+The gem is partly written in C to reduce the application performance as minimal as possible.
 
 ## Installation
 
@@ -20,7 +22,7 @@ This gem ...!
 
 Using `StackTracy` is pretty straightforward.
 
-    $ class Foo; end
+    $ StackTracy.start
 
 ## Using the console
 
@@ -29,9 +31,17 @@ The StackTracy repo is provided with `script/console` which you can use for deve
 Run the following command in your console:
 
     $ script/console
-    Loading StackTracy development environment (0.1.0)
-    [1] pry(main)> class Foo; end
-    => Foo
+    Loading development environment (StackTracy 0.1.0)
+    [1] pry(main)> stack_tracy do
+    [1] pry(main)*   puts "asdf"
+    [1] pry(main)* end
+    asdf
+    Kernel#puts <0.000121>
+       IO#puts <0.000091>
+          IO#write <0.000032>
+          IO#write <0.000020>
+    => nil
+    [2] pry(main)>
 
 ## Testing
 
@@ -43,9 +53,20 @@ You can also run a single test:
 
     $ ruby test/unit/test_tracy.rb
 
+## TODO
+
+* Write tests
+* Provide writing stack trace data to (CSV) files
+* Display results within a HTML page
+* Hook into Sinatra requests
+
 ## Contact me
 
 For support, remarks and requests, please mail me at [paul.engel@holder.nl](mailto:paul.engel@holder.nl).
+
+## Credit
+
+A part of the StackTracy C implementation is based on [rbtrace](https://github.com/tmm1/rbtrace) and [ruby-prof](https://github.com/rdp/ruby-prof).
 
 ## License
 
