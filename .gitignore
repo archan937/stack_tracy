@@ -1,7 +1,10 @@
 *.gem
+*.o
+*.bundle
 .bundle
 .rvmrc
 .DS_Store
 Gemfile.lock
 doc
 pkg
+Makefile
