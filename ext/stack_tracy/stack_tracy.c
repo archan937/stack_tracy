@@ -112,7 +112,6 @@ VALUE stack_tracy_stop(VALUE self) {
 
   for (i = 0; i < size - 1; i++) {
     info = rb_funcall(cEventInfo, rb_intern("new"), 0);
-
     rb_iv_set(info, "@event", rb_str_new2(stack[i].event));
     rb_iv_set(info, "@file", rb_str_new2(stack[i].file));
     rb_iv_set(info, "@line", rb_int_new(stack[i].line));
@@ -122,7 +121,6 @@ VALUE stack_tracy_stop(VALUE self) {
       rb_iv_set(info, "@method", rb_str_new2(stack[i].method));
     }
     rb_iv_set(info, "@nsec", rb_int_new(stack[i].nsec));
-
     rb_ary_push(data, info);
   }
 

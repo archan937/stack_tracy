@@ -12,6 +12,6 @@ end
 
 group :gem_test do
   gem "minitest"
-  gem "mocha"
+  gem "mocha", :require => "mocha_standalone"
   gem "pry"
 end
