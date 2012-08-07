@@ -30,9 +30,9 @@ s.shout "B"
 StackTracy.stop
 s.shout "C"
 
-StackTracy.start
-s.shout "D"
-sleep 0.3841
-sleep 0.9503
-sleep 0.2094
-StackTracy.stop
+stack_tracy do
+  s.shout "D"
+  sleep 0.3841
+  sleep 0.9503
+  sleep 0.2094
+end
