@@ -55,7 +55,6 @@ You can also run a single test:
 
 ## TODO
 
-* Write tests
 * Provide writing stack trace data to (CSV) files
 * Display results within a HTML page
 * Hook into Sinatra requests

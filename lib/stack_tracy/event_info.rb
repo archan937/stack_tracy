@@ -18,7 +18,7 @@ module StackTracy
         if to_s == arg
           true
         else
-          captures = arg.match(/^(\w+\*?)(\.|\#)?(\w+\*?)?$/).captures
+          captures = arg.match(/^([\w:]*\*?)?(\.|\#)?(\w*\*?)?$/).captures
           object_match?(captures[0]) && singleton_match?(captures[1]) && method_match?(captures[2])
         end
       else
@@ -30,6 +30,10 @@ module StackTracy
       (nsec - other.nsec) / 1000000000.0 if other.is_a? EventInfo
     end
 
+    def to_hash
+      {:event => event, :file => file, :line => line, :singleton => singleton, :object => object, :method => method, :nsec => nsec, :call => to_s}
+    end
+
     def to_s
       "#{object}#{singleton ? "." : "#"}#{method}"
     end
@@ -37,7 +41,7 @@ module StackTracy
   private
 
     def object_match?(arg)
-      object =~ /^#{arg.gsub("*", "(::.*)?")}$/
+      (arg.to_s == "") || (object =~ /^#{arg.gsub("*", "\\w*(::\\w*)*")}$/)
     end
 
     def singleton_match?(arg)
@@ -45,7 +49,7 @@ module StackTracy
     end
 
     def method_match?(arg)
-      arg.nil? || (method =~ /^#{arg.gsub("*", ".*?")}$/)
+      (arg.to_s == "") || (method =~ /^#{arg.gsub("*", "\\w*")}$/)
     end
 
   end

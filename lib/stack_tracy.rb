@@ -5,35 +5,44 @@ require "stack_tracy/version"
 module StackTracy
   extend self
 
-  def print(*only)
-    call_stack, lines, only = [], [], only.flatten
-    stack_trace.each do |event_info|
-      next unless process?(event_info, only)
-      if event_info.call?
-        lines << "#{"   " * call_stack.size}#{event_info.to_s}"
-        call_stack << [lines.size - 1, event_info]
-      elsif event_info.return? && call_stack.last && event_info.matches?(call_stack.last.last)
-        call_stack.pop.tap do |(line, match)|
-          lines[line] << " <#{"%.6f" % (event_info - match)}>"
-        end
-      end
-    end
-    puts lines
-  end
-
-private
-
-  def process?(event_info, only)
-    return true if only.empty?
-    only.any?{|x| event_info.matches?(x)}
-  end
-
   def stack_trace
     @stack_trace || []
   end
 
+  def select(*only)
+    [].tap do |lines|
+      call_stack, only = [], only.flatten
+      stack_trace.each do |event_info|
+        next unless process?(event_info, only)
+        if event_info.call?
+          lines << event_info.to_hash.merge!(:depth => call_stack.size)
+          call_stack << [lines.size - 1, event_info]
+        elsif event_info.return? && call_stack.last && event_info.matches?(call_stack.last.last)
+          call_stack.pop.tap do |(line, match)|
+            lines[line][:duration] = event_info - match
+          end
+        end
+      end
+    end
+  end
+
+  def print(*only)
+    puts select(only).collect{ |event|
+      line = "   " * event[:depth]
+      line << event[:call]
+      line << " <#{"%.6f" % event[:duration]}>"
+    }
+  end
+
+private
+
   def store(stack_trace)
     @stack_trace = stack_trace
+  end
+
+  def process?(event_info, only)
+    return true if only.empty?
+    only.any?{|x| event_info.matches?(x)}
   end
 
 end
