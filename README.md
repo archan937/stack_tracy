@@ -82,12 +82,37 @@ Once you have recorded stack events, you can call the following methods:
           IO#write <0.000016>
     => nil
 
-`StackTracy.dump` - dump (optionally filtered) recorded stack events in a CSV file
+### Writing data to CSV files
 
-    [6] pry(main)> StackTracy.dump "result.csv"
+You can dump (optionally filtered) recorded stack events to a CSV file.
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    => testing
+    [3] pry(main)> StackTracy.stop
+    Kernel#puts <0.000121>
+       IO#puts <0.000091>
+          IO#write <0.000032>
+          IO#write <0.000020>
+    => nil
+    [4] pry(main)> StackTracy.dump "result.csv"
     => true
 
-(contents of `result.csv`)
+You can also use the `stack_tracy` convenience method.
+
+    [1] pry(main)> stack_tracy "result.csv" do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+    testing
+    Kernel#puts <0.000121>
+       IO#puts <0.000091>
+          IO#write <0.000032>
+          IO#write <0.000020>
+    => true
+
+#### CSV sample file
+
+This is what the contents of `result.csv` would look like:
 
     event;file;line;singleton;object;method;nsec;call;depth;duration
     c-call;(pry);2;false;Kernel;puts;1344466943040581120;Kernel#puts;0;0.000120832
@@ -126,7 +151,6 @@ You can also run a single test:
 
 ## TODO
 
-* Provide writing stack trace data to (CSV) files
 * Display results within a HTML page
 * Hook into Sinatra requests
 

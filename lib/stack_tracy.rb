@@ -30,7 +30,7 @@ module StackTracy
     puts select(only).collect{ |event|
       line = "   " * event[:depth]
       line << event[:call]
-      line << " <#{"%.6f" % event[:duration]}>"
+      line << " <#{"%.6f" % event[:duration]}>" if event[:duration]
     }
   end
 
