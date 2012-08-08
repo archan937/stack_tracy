@@ -1,6 +1,7 @@
 *.gem
 *.o
 *.bundle
+*.csv
 .bundle
 .rvmrc
 .DS_Store

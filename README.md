@@ -82,6 +82,19 @@ Once you have recorded stack events, you can call the following methods:
           IO#write <0.000016>
     => nil
 
+`StackTracy.dump` - dump (optionally filtered) recorded stack events in a CSV file
+
+    [6] pry(main)> StackTracy.dump "result.csv"
+    => true
+
+(contents of `result.csv`)
+
+    event;file;line;singleton;object;method;nsec;call;depth;duration
+    c-call;(pry);2;false;Kernel;puts;1344466943040581120;Kernel#puts;0;0.000120832
+    c-call;(pry);2;false;IO;puts;1344466943040599040;IO#puts;1;9.1904e-05
+    c-call;(pry);2;false;IO;write;1344466943040613120;IO#write;2;3.2768e-05
+    c-call;(pry);2;false;IO;write;1344466943040658944;IO#write;2;1.9968e-05
+
 ## Using the console
 
 The StackTracy repo is provided with `script/console` which you can use for development / testing purposes.

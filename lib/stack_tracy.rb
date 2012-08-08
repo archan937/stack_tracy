@@ -34,6 +34,17 @@ module StackTracy
     }
   end
 
+  def dump(path, *only)
+    keys = [:event, :file, :line, :singleton, :object, :method, :nsec, :call, :depth, :duration]
+    File.open(File.expand_path(path), "w") do |file|
+      file << keys.join(";") + "\n"
+      select(only).each do |event|
+        file << event.values_at(*keys).join(";") + "\n"
+      end
+    end
+    true
+  end
+
 private
 
   def store(stack_trace)
