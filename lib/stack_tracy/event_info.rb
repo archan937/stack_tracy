@@ -13,9 +13,9 @@ module StackTracy
     def matches?(arg)
       case arg.class.name
       when "StackTracy::EventInfo"
-        matches? arg.to_s
+        matches? arg.call
       when "String"
-        if to_s == arg
+        if call == arg
           true
         else
           captures = arg.match(/^([\w:]*\*?)?(\.|\#)?(\w*\*?)?$/).captures
@@ -31,10 +31,10 @@ module StackTracy
     end
 
     def to_hash
-      {:event => event, :file => file, :line => line, :singleton => singleton, :object => object, :method => method, :nsec => nsec, :call => to_s}
+      {:event => event, :file => file, :line => line, :singleton => singleton, :object => object, :method => method, :nsec => nsec, :call => call}
     end
 
-    def to_s
+    def call
       "#{object}#{singleton ? "." : "#"}#{method}"
     end
 

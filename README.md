@@ -1,3 +1,5 @@
+**Note: This gem is not available on [http://rubygems.org](http://rubygems.org) yet**
+
 # StackTracy
 
 Investigate and detect slow methods within your stack trace
@@ -20,6 +22,8 @@ The gem is partly written in C to reduce the application performance as minimal 
 
 ## Usage
 
+### Recording stack events
+
 Using `StackTracy` is pretty straightforward. You can either `start` and `stop` stack events recording.
 
     [1] pry(main)> StackTracy.start
@@ -32,12 +36,23 @@ Or you can use the `stack_tracy` convenience method which records stack events w
     [1] pry(main)>   puts "testing"
     [1] pry(main)> end
 
+### Using recorded stack events
+
 Once you have recorded stack events, you can call the following methods:
 
 `StackTracy.stack_trace` - returns all recorded stack events (`array` of `StackTracy::EventInfo` instances)
 
     [2] pry(main)> StackTracy.stack_trace.inspect
-    => ["Kernel#puts", "IO#puts", "IO#write", "IO#write", "IO#write", "IO#write", "IO#puts", "Kernel#puts"]
+    => [
+      #<StackTracy::EventInfo:0x0000010154b418 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="Kernel", @method="puts", @nsec=1344465432463251968>,
+      #<StackTracy::EventInfo:0x0000010154b350 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="puts", @nsec=1344465432463272960>,
+      #<StackTracy::EventInfo:0x0000010154b1c0 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463288064>,
+      #<StackTracy::EventInfo:0x0000010154b0a8 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463331072>,
+      #<StackTracy::EventInfo:0x0000010154af68 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463344896>,
+      #<StackTracy::EventInfo:0x0000010154ae50 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463365888>,
+      #<StackTracy::EventInfo:0x0000010154ad38 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="puts", @nsec=1344465432463378944>,
+      #<StackTracy::EventInfo:0x0000010154ac20 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="Kernel", @method="puts", @nsec=1344465432463390976>]
+    ]
 
 `StackTracy.select` - returns (optionally filtered) recorded stack events for printing purposes (`array` of `Hash` instances)
 
@@ -48,12 +63,10 @@ Once you have recorded stack events, you can call the following methods:
       {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852762112, :call=>"IO#write", :depth=>2, :duration=>3.4816e-05},
       {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852811008, :call=>"IO#write", :depth=>2, :duration=>2.0992e-05}
     ]
-
     [4] pry(main)> StackTracy.select(%w(Kernel)).inspect
     => [
       {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024}
     ]
-
     [5] pry(main)> StackTracy.select("Kernel IO#puts").inspect
     => [
       {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
