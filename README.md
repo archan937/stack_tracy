@@ -20,9 +20,54 @@ The gem is partly written in C to reduce the application performance as minimal 
 
 ## Usage
 
-Using `StackTracy` is pretty straightforward.
+Using `StackTracy` is pretty straightforward. You can either `start` and `stop` stack events recording.
 
-    $ StackTracy.start
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+
+Or you can use the `stack_tracy` convenience method which records stack events within the passed block.
+
+    [1] pry(main)> stack_tracy do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Once you have recorded stack events, you can call the following methods:
+
+`StackTracy.stack_trace` - returns all recorded stack events (`array` of `StackTracy::EventInfo` instances)
+
+    [2] pry(main)> StackTracy.stack_trace.inspect
+    => ["Kernel#puts", "IO#puts", "IO#write", "IO#write", "IO#write", "IO#write", "IO#puts", "Kernel#puts"]
+
+`StackTracy.select` - returns (optionally filtered) recorded stack events for printing purposes (`array` of `Hash` instances)
+
+    [3] pry(main)> StackTracy.select.inspect
+    => [
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852762112, :call=>"IO#write", :depth=>2, :duration=>3.4816e-05},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852811008, :call=>"IO#write", :depth=>2, :duration=>2.0992e-05}
+    ]
+
+    [4] pry(main)> StackTracy.select(%w(Kernel)).inspect
+    => [
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024}
+    ]
+
+    [5] pry(main)> StackTracy.select("Kernel IO#puts").inspect
+    => [
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05}
+    ]
+
+`StackTracy.print` - prints (optionally filtered) recorded stack events as a tree
+
+    [6] pry(main)> StackTracy.print
+    Kernel#puts <0.000094>
+       IO#puts <0.000069>
+          IO#write <0.000018>
+          IO#write <0.000016>
+    => nil
 
 ## Using the console
 
@@ -33,9 +78,9 @@ Run the following command in your console:
     $ script/console
     Loading development environment (StackTracy 0.1.0)
     [1] pry(main)> stack_tracy do
-    [1] pry(main)*   puts "asdf"
+    [1] pry(main)*   puts "testing"
     [1] pry(main)* end
-    asdf
+    testing
     Kernel#puts <0.000121>
        IO#puts <0.000091>
           IO#write <0.000032>
