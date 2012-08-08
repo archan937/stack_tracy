@@ -148,6 +148,17 @@ module Unit
             assert hash.delete(:duration)
           end
         }
+
+        assert_equal [
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1}
+        ], StackTracy.select("Kernel IO#write").collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            assert hash.delete(:duration)
+          end
+        }
       end
     end
 

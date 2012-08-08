@@ -11,7 +11,7 @@ module StackTracy
 
   def select(*only)
     [].tap do |lines|
-      call_stack, only = [], only.flatten
+      call_stack, only = [], only.flatten.collect{|x| x.split(" ")}.flatten
       stack_trace.each do |event_info|
         next unless process?(event_info, only)
         if event_info.call?
