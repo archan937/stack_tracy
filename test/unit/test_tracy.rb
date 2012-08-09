@@ -30,6 +30,7 @@ module Unit
         ], StackTracy.stack_trace.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
+            hash.delete(:time)
           end
         }
 
@@ -55,6 +56,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
       end
@@ -74,6 +76,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -83,6 +86,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -94,6 +98,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -105,6 +110,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -115,6 +121,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -125,6 +132,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -135,6 +143,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -146,6 +155,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
 
@@ -157,6 +167,7 @@ module Unit
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
+            hash.delete(:time)
           end
         }
       end

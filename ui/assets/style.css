@@ -1,0 +1,68 @@
+/* http://wbpreview.com/previews/WB0L805L0/notification.html */
+
+* {
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline; }
+
+body {
+  padding-top: 60px;
+  padding-bottom: 60px;
+  color: #222;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  background: #F1F1F1; }
+
+fieldset, img {
+  border: 0; }
+
+pre, input, textarea {
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif; }
+
+table {
+  border-collapse: collapse; }
+
+ol, ul {
+  list-style: none; }
+
+#page {
+  width: 920px;
+  margin: auto;
+  padding: 30px 30px 25px 30px;
+  background: white;
+  border: 1px solid #DDD; }
+
+#page h1 {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  font-size: 30px;
+  border-bottom: 1px solid #DDD; }
+  #page h1 small {
+    color: #999;
+    font-size: 18px;
+    font-weight: normal; }
+
+#page .stack_trace {
+  line-height: 25px; }
+
+#page .stack_trace div.bold {
+  font-weight: bold; }
+
+#page .stack_trace div span.time,
+#page .stack_trace div span.duration {
+  width: 100px;
+  padding-right: 15px;
+  text-align: right;
+  display: -moz-inline-block;
+  display: inline-block;
+  *display: inline;
+  zoom: 1; }
+
+#page .stack_trace div span.call {
+  width: 625px;
+  padding-left: 15px;
+  display: -moz-inline-block;
+  display: inline-block;
+  *display: inline;
+  zoom: 1; }

@@ -120,6 +120,18 @@ This is what the contents of `result.csv` would look like:
     c-call;(pry);2;false;IO;write;1344466943040613120;IO#write;2;3.2768e-05
     c-call;(pry);2;false;IO;write;1344466943040658944;IO#write;2;1.9968e-05
 
+### Viewing stack events in your browser
+
+You can easily view the dumped stack events within your browser by either calling the following within Ruby:
+
+    [1] pry(main)> StackTracy.open "stack_events.csv"
+
+or the following within the Terminal:
+
+    $ tracy "stack_events.csv"
+
+Your default browser will be launched in which the stack events will be displayed nicely.
+
 ## Using the console
 
 The StackTracy repo is provided with `script/console` which you can use for development / testing purposes.
@@ -151,8 +163,8 @@ You can also run a single test:
 
 ## TODO
 
-* Display results within a HTML page
-* Hook into Sinatra requests
+* Improve the stack events HTML page: (un)folding and filtering (based on duration and/or call)
+* Hook into Sinatra (and Rails?) requests
 
 ## Contact me
 

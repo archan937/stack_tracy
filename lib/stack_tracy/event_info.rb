@@ -2,6 +2,15 @@ module StackTracy
   class EventInfo
     attr_reader :event, :file, :line, :singleton, :object, :method, :nsec
 
+    def self.to_hashes(csv)
+      CSV.parse(csv, :headers => true, :col_sep => ";").collect do |row|
+        {
+          :event => row[0]     , :file => row[1]     , :line => row[2].to_i, :singleton => row[3] == "true", :object   => row[4]      , :method => row[5],
+          :nsec  => row[6].to_f, :time => row[7].to_f, :call => row[8]     , :depth     => row[9].to_i     , :duration => row[10].to_f
+        }
+      end
+    end
+
     def call?
       !!event.match(/call$/)
     end
@@ -30,8 +39,11 @@ module StackTracy
       (nsec - other.nsec) / 1000000000.0 if other.is_a? EventInfo
     end
 
-    def to_hash
-      {:event => event, :file => file, :line => line, :singleton => singleton, :object => object, :method => method, :nsec => nsec, :call => call}
+    def to_hash(first = nil)
+      {
+        :event => event, :file => file, :line => line, :singleton => singleton, :object => object,
+        :method => method, :nsec => nsec, :time => (first ? self - first : nil), :call => call
+      }
     end
 
     def call

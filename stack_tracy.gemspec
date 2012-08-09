@@ -14,4 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "stack_tracy"
   gem.require_paths = ["lib"]
   gem.version       = "0.1.0"
+
+  gem.add_dependency "rich_support", "~> 0.1.2"
+  gem.add_dependency "launchy", "2.1.0"
 end

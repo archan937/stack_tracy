@@ -2,6 +2,7 @@
 *.o
 *.bundle
 *.csv
+*.html
 .bundle
 .rvmrc
 .DS_Store

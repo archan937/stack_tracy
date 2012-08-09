@@ -1,6 +1,6 @@
 module Kernel
 
-  def stack_tracy(target_file)
+  def stack_tracy(target_file = nil)
     StackTracy.start
     yield
     StackTracy.stop

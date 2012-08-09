@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>
+      stack_tracy@localhost: /<%= File.basename file %>
+    </title>
+    <link  href="assets/style.css" type="text/css" rel="stylesheet" media="screen"/>
+    <script src="assets/script.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="page">
+      <h1>
+        StackTracy&nbsp; <small><%= file %></small>
+      </h1>
+      <div class="stack_trace">
+        <div class="bold">
+          <span class="time">Time</span>
+          <span class="duration">Duration</span>
+          <span class="call">Call</span>
+        </div>
+        <% events.each do |event| %>
+        <div>
+          <span class="time">
+            <%= "%.6f" % event[:time] %>
+          </span>
+          <span class="duration">
+            <%= "%.6f" % event[:duration] %>
+          </span>
+          <span class="call">
+            <%= ("&nbsp;&nbsp;&nbsp;" * event[:depth]) + event[:call] %>
+          </span>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "stack_tracy"
+
+begin
+  StackTracy.open ARGV.first
+rescue StackTracy::Error => e
+  puts e.message.red
+end
