@@ -78,12 +78,12 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
     #endif
   }
 
-  info.event = event_name(event);
+  info.event = event;
   info.file = (char *)rb_sourcefile();
   info.line = rb_sourceline();
   info.singleton = singleton;
-  info.object = rb_class2name(singleton ? self : klass);
-  info.method = rb_id2name(id);
+  info.object = (VALUE *)(singleton ? self : klass);
+  info.method = (ID *)id;
   info.nsec = nsec();
 
   size = size + 1;
@@ -106,20 +106,29 @@ VALUE stack_tracy_start(VALUE self) {
 VALUE stack_tracy_stop(VALUE self) {
   int i;
   VALUE info, data;
+  ID id;
+  const char *method;
 
   rb_remove_event_hook(stack_tracy_trap);
   data = rb_ary_new();
 
   for (i = 0; i < size - 1; i++) {
     info = rb_funcall(cEventInfo, rb_intern("new"), 0);
-    rb_iv_set(info, "@event", rb_str_new2(stack[i].event));
+
+    rb_iv_set(info, "@event", rb_str_new2(event_name(stack[i].event)));
     rb_iv_set(info, "@file", rb_str_new2(stack[i].file));
     rb_iv_set(info, "@line", rb_int_new(stack[i].line));
     rb_iv_set(info, "@singleton", stack[i].singleton);
-    rb_iv_set(info, "@object", rb_str_new2(stack[i].object));
-    if (stack[i].method != NULL) {
-      rb_iv_set(info, "@method", rb_str_new2(stack[i].method));
+    rb_iv_set(info, "@object", rb_str_new2(rb_class2name((VALUE) stack[i].object)));
+
+    id = (ID) stack[i].method;
+    if (&id != NULL) {
+      method = rb_id2name(id);
+      if (method != NULL) {
+        rb_iv_set(info, "@method", rb_str_new2(method));
+      }
     }
+
     rb_iv_set(info, "@nsec", rb_int_new(stack[i].nsec));
     rb_ary_push(data, info);
   }

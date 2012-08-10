@@ -12,12 +12,12 @@
 #endif
 
 typedef struct event_info_t {
-  char const *event;
+  rb_event_flag_t event;
   char *file;
   int line;
   bool singleton;
-  char const *object;
-  char const *method;
+  const VALUE *object;
+  const ID *method;
   uint64_t nsec;
 } EventInfo;
 

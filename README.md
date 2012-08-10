@@ -163,6 +163,7 @@ You can also run a single test:
 
 ## TODO
 
+* Optimize invocation of `rb_class2name` and `rb_id2name` within the C extension
 * Improve the stack events HTML page: (un)folding and filtering (based on duration and/or call)
 * Hook into Sinatra (and Rails?) requests
 
