@@ -236,7 +236,7 @@ You can also run a single test:
 ## TODO
 
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
-* Improve the stack events HTML page: (un)folding and filtering (based on duration and/or call)
+* Improve the stack events HTML page: (un)folding and filtering (based on duration and/or call) and ordering
 * Hook into Sinatra (and Rails?) requests
 
 ## Contact me

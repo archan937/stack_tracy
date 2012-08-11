@@ -7,7 +7,7 @@
 
 body {
   padding-top: 60px;
-  padding-bottom: 60px;
+  padding-bottom: 45px;
   color: #222;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -26,31 +26,42 @@ table {
 ol, ul {
   list-style: none; }
 
+ul.nav {
+  margin-bottom: 25px; }
+
 #page {
   width: 920px;
   margin: auto;
-  padding: 30px 30px 25px 30px;
+  padding: 30px 35px;
   background: white;
   border: 1px solid #DDD; }
 
 #page h1 {
   margin-bottom: 20px;
-  padding-bottom: 20px;
-  font-size: 30px;
-  border-bottom: 1px solid #DDD; }
+  padding-bottom: 10px;
+  font-size: 30px; }
   #page h1 small {
     color: #999;
     font-size: 18px;
     font-weight: normal; }
 
-#page .stack_trace {
-  line-height: 25px; }
+#page .tab-pane {
+  line-height: 28px; }
 
-#page .stack_trace div.bold {
+#page .tab-pane div {
+  border-bottom: 1px solid #EFEFEF; }
+
+#page .tab-pane div.group {
+  border: 0; }
+
+#page .tab-pane div.bold {
+  padding-bottom: 4px;
   font-weight: bold; }
 
-#page .stack_trace div span.time,
-#page .stack_trace div span.duration {
+#page .tab-pane div span.time,
+#page .tab-pane div span.average,
+#page .tab-pane div span.duration,
+#page .tab-pane div span.count {
   width: 100px;
   padding-right: 15px;
   text-align: right;
@@ -59,10 +70,20 @@ ol, ul {
   *display: inline;
   zoom: 1; }
 
-#page .stack_trace div span.call {
+#page .tab-pane div span.call {
   width: 625px;
   padding-left: 15px;
   display: -moz-inline-block;
   display: inline-block;
   *display: inline;
   zoom: 1; }
+
+#page #cumulatives div span.count {
+  width: 65px; }
+
+#page #cumulatives div span.call {
+  width: 565px; }
+
+#footer {
+  padding-top: 45px;
+  text-align: center; }

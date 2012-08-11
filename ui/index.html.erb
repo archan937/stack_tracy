@@ -5,34 +5,98 @@
     <title>
       stack_tracy@localhost: /<%= File.basename file %>
     </title>
-    <link  href="assets/style.css" type="text/css" rel="stylesheet" media="screen"/>
-    <script src="assets/script.js" type="text/javascript"></script>
+    <link href="assets/stack_tracy.css" type="text/css" rel="stylesheet" media="screen"/>
+    <link href="assets/bootstrap.css" type="text/css" rel="stylesheet" media="screen"/>
+    <script src="assets/jquery.js" type="text/javascript"></script>
+    <script src="assets/bootstrap-tab.js" type="text/javascript"></script>
+    <script src="assets/stack_tracy.js" type="text/javascript"></script>
   </head>
   <body>
     <div id="page">
       <h1>
         StackTracy&nbsp; <small><%= file %></small>
       </h1>
-      <div class="stack_trace">
-        <div class="bold">
-          <span class="time">Time</span>
-          <span class="duration">Duration</span>
-          <span class="call">Call</span>
+      <div class="tabbable">
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a href="#stack_trace" data-toggle="tab">Stack trace</a>
+          </li>
+          <li>
+            <a href="#cumulatives" data-toggle="tab">Cumulatives</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <% cumulatives = {} %>
+          <div class="tab-pane active" id="stack_trace">
+            <div class="bold">
+              <span class="time">Time</span>
+              <span class="duration">Duration</span>
+              <span class="call">Call</span>
+            </div>
+            <% depth = 0 %>
+            <% events.each_with_index do |event, index| %>
+            <%
+              cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
+              cumulatives[event[:call]][:duration] += event[:duration]
+              cumulatives[event[:call]][:count] += 1
+            %>
+            <% if depth < event[:depth] %>
+            <div class="group">
+            <% end %>
+            <div>
+              <span class="time">
+                <%= "%.6f" % event[:time] %>
+              </span>
+              <span class="duration">
+                <%= "%.6f" % event[:duration] %>
+              </span>
+              <span class="call">
+                <%= "&nbsp;&nbsp;&nbsp;" * event[:depth] %>
+                <% if (next_event = events[index + 1]) && next_event[:depth] > event[:depth] %>
+                  <a class="toggler" href="#" onclick="return false">
+                    <%= event[:call] %>
+                  </a>
+                <% else %>
+                  <%= event[:call] %>
+                <% end %>
+              </span>
+            </div>
+            <% if depth > event[:depth] %>
+            </div>
+            <% end %>
+            <% depth = event[:depth] %>
+            <% end %>
+            <%= "</div>" * depth %>
+          </div>
+          <div class="tab-pane" id="cumulatives">
+            <div class="bold">
+              <span class="average">Average</span>
+              <span class="duration">Duration</span>
+              <span class="count">Count</span>
+              <span class="call">Call</span>
+            </div>
+            <% cumulatives.each do |call, stats| %>
+            <div>
+              <span class="average">
+                <%= "%.6f" % (stats[:duration] / stats[:count].to_f) %>
+              </span>
+              <span class="duration">
+                <%= "%.6f" % stats[:duration] %>
+              </span>
+              <span class="count">
+                <%= stats[:count] %>
+              </span>
+              <span class="call">
+                <%= call %>
+              </span>
+            </div>
+            <% end %>
+          </div>
         </div>
-        <% events.each do |event| %>
-        <div>
-          <span class="time">
-            <%= "%.6f" % event[:time] %>
-          </span>
-          <span class="duration">
-            <%= "%.6f" % event[:duration] %>
-          </span>
-          <span class="call">
-            <%= ("&nbsp;&nbsp;&nbsp;" * event[:depth]) + event[:call] %>
-          </span>
-        </div>
-        <% end %>
       </div>
+    </div>
+    <div id="footer">
+      made by <a href="https://twitter.com/archan937">Paul Engel (@archan937)</a> - <a href="https://github.com/archan937/stack_tracy">@github</a> - <a href="http://holder.nl">Internetbureau Holder B.V.</a>
     </div>
   </body>
 </html>
