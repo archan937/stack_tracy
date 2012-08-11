@@ -98,18 +98,6 @@ You can dump (optionally filtered) recorded stack events to a CSV file.
     [4] pry(main)> StackTracy.dump "result.csv"
     => true
 
-You can also use the `stack_tracy` convenience method.
-
-    [1] pry(main)> stack_tracy "result.csv" do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
-    testing
-    Kernel#puts <0.000121>
-       IO#puts <0.000091>
-          IO#write <0.000032>
-          IO#write <0.000020>
-    => true
-
 #### CSV sample file
 
 This is what the contents of `result.csv` would look like:
@@ -124,13 +112,97 @@ This is what the contents of `result.csv` would look like:
 
 You can easily view the dumped stack events within your browser by either calling the following within Ruby:
 
-    [1] pry(main)> StackTracy.open "stack_events.csv"
+    [1] pry(main)> StackTracy.open "some/dir/file.csv"
 
 or the following within the Terminal:
 
-    $ tracy "stack_events.csv"
+    $ tracy "some/dir/file.csv"
 
-Your default browser will be launched in which the stack events will be displayed nicely.
+Your default browser will be launched in which the stack events will be displayed.
+
+When passing no path, `tracy` will look for `./stack_events.csv` and display it in the browser:
+
+    $ tracy
+
+### Kernel#stack_tracy
+
+As already mentioned, there is a convenience method called `stack_tracy` convenience method. The following shows a couple variants with its equivalent "normal implementation".
+
+#### Without passing an argument
+
+Record stack events executed within a block:
+
+    [1] pry(main)> stack_tracy "result.csv" do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+
+#### Passing `:print`
+
+Record stack events executed within a block and print the stack tree:
+
+    [1] pry(main)> stack_tracy :print do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+    [4] pry(main)> StackTracy.print
+
+#### Passing `:dump`
+
+Record stack events executed within a block and write the obtained data to `./stack_events.csv`:
+
+    [1] pry(main)> stack_tracy :dump do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+    [4] pry(main)> StackTracy.dump "stack_events.csv"
+
+#### Passing a CSV file path
+
+Record stack events executed within a block and write the obtained data to the passed file path:
+
+    [1] pry(main)> stack_tracy "some/file.csv" do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+    [4] pry(main)> StackTracy.dump "some/file.csv"
+
+#### Passing `:open`
+
+Record stack events executed within a block and open the stack tree in your browser:
+
+    [1] pry(main)> stack_tracy :open do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+    [4] pry(main)> tmp_file = "#{Dir::tmpdir}/stack_events-#{SecureRandom.hex(5)}.csv"
+    [5] pry(main)> StackTracy.dump tmp_file
+    [6] pry(main)> StackTracy.open tmp_file
 
 ## Using the console
 
@@ -140,7 +212,7 @@ Run the following command in your console:
 
     $ script/console
     Loading development environment (StackTracy 0.1.0)
-    [1] pry(main)> stack_tracy do
+    [1] pry(main)> stack_tracy :print do
     [1] pry(main)*   puts "testing"
     [1] pry(main)* end
     testing

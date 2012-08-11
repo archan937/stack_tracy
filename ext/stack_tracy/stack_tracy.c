@@ -79,7 +79,7 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
   }
 
   info.event = event;
-  info.file = (char *)rb_sourcefile();
+  info.file = (char *) rb_sourcefile();
   info.line = rb_sourceline();
   info.singleton = singleton;
   info.object = (VALUE *)(singleton ? self : klass);
@@ -105,36 +105,37 @@ VALUE stack_tracy_start(VALUE self) {
 
 VALUE stack_tracy_stop(VALUE self) {
   int i;
-  VALUE info, data;
+  VALUE event, events;
   ID id;
-  const char *method;
+  const char *object, *method;
 
   rb_remove_event_hook(stack_tracy_trap);
-  data = rb_ary_new();
+
+  events = rb_ary_new();
 
   for (i = 0; i < size - 1; i++) {
-    info = rb_funcall(cEventInfo, rb_intern("new"), 0);
+    event = rb_funcall(cEventInfo, rb_intern("new"), 0);
+    object = rb_class2name((VALUE) stack[i].object);
 
-    rb_iv_set(info, "@event", rb_str_new2(event_name(stack[i].event)));
-    rb_iv_set(info, "@file", rb_str_new2(stack[i].file));
-    rb_iv_set(info, "@line", rb_int_new(stack[i].line));
-    rb_iv_set(info, "@singleton", stack[i].singleton);
-    rb_iv_set(info, "@object", rb_str_new2(rb_class2name((VALUE) stack[i].object)));
+    rb_iv_set(event, "@event", rb_str_new2(event_name(stack[i].event)));
+    rb_iv_set(event, "@file", rb_str_new2(stack[i].file));
+    rb_iv_set(event, "@line", rb_int_new(stack[i].line));
+    rb_iv_set(event, "@singleton", stack[i].singleton);
+    rb_iv_set(event, "@object", rb_str_new2(object));
+    rb_iv_set(event, "@nsec", rb_int_new(stack[i].nsec));
 
     id = (ID) stack[i].method;
     if (&id != NULL) {
       method = rb_id2name(id);
       if (method != NULL) {
-        rb_iv_set(info, "@method", rb_str_new2(method));
+        rb_iv_set(event, "@method", rb_str_new2(method));
       }
     }
 
-    rb_iv_set(info, "@nsec", rb_int_new(stack[i].nsec));
-    rb_ary_push(data, info);
+    rb_ary_push(events, event);
   }
 
-  rb_funcall(mStackTracy, rb_intern("send"), 2, rb_str_new2("store"), data);
-  rb_funcall(mStackTracy, rb_intern("print"), 0);
+  rb_funcall(mStackTracy, rb_intern("send"), 2, rb_str_new2("store"), events);
 
   return Qnil;
 }

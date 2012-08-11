@@ -10,6 +10,8 @@ module Unit
         assert StackTracy.respond_to?(:stack_trace)
         assert StackTracy.respond_to?(:select)
         assert StackTracy.respond_to?(:print)
+        assert StackTracy.respond_to?(:dump)
+        assert StackTracy.respond_to?(:open)
       end
 
       it "should have the expected stack trace" do
