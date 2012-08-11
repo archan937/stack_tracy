@@ -245,7 +245,7 @@ For support, remarks and requests, please mail me at [paul.engel@holder.nl](mail
 
 ## Credit
 
-A part of the StackTracy C implementation is based on [rbtrace](https://github.com/tmm1/rbtrace) and [ruby-prof](https://github.com/rdp/ruby-prof).
+Two functions within the StackTracy C implementation are taken from [ruby-prof](https://github.com/rdp/ruby-prof).
 
 ## License
 

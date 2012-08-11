@@ -74,10 +74,6 @@ private
     File.expand_path("../../ui/#{file}", __FILE__)
   end
 
-  def store(stack_trace)
-    @stack_trace = stack_trace
-  end
-
   def process?(event_info, only)
     return true if only.empty?
     only.any?{|x| event_info.matches?(x)}

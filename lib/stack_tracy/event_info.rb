@@ -1,6 +1,6 @@
 # See http://stackoverflow.com/questions/9607554/ruby-invalid-byte-sequence-in-utf-8
 
-#encoding: UTF-8
+# encoding: UTF-8
 
 module StackTracy
   class EventInfo
@@ -40,7 +40,7 @@ module StackTracy
     end
 
     def -(other)
-      (nsec - other.nsec) / 1000000000.0 if other.is_a? EventInfo
+      nsec - other.nsec if other.is_a? EventInfo
     end
 
     def to_hash(first = nil)

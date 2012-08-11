@@ -1,17 +1,36 @@
 #include "stack_tracy.h"
 
-uint64_t nsec() {
-  #ifdef __MACH__
-    clock_serv_t cclock;
-    mach_timespec_t mts;
-    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-    clock_get_time(cclock, &mts);
-    mach_port_deallocate(mach_task_self(), cclock);
-    return (mts.tv_sec * 1e9) + mts.tv_nsec;
+static double nsec() {
+  #if defined(__linux__)
+    struct timespec clock;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &clock);
+    return (clock.tv_sec * 1000000000 + clock.tv_nsec) / 1000000000.0;
+  #elif defined(_win32)
+    FILETIME createTime;
+    FILETIME exitTime;
+    FILETIME sysTime;
+    FILETIME cpuTime;
+
+    ULARGE_INTEGER sysTimeInt;
+    ULARGE_INTEGER cpuTimeInt;
+    ULONGLONG totalTime;
+
+    GetProcessTimes(GetCurrentProcess(), &createTime, &exitTime, &sysTime, &cpuTime);
+
+    /* Doing this based on MSFT's recommendation in the FILETIME structure documentation at
+      http://msdn.microsoft.com/en-us/library/ms724284%28VS.85%29.aspx*/
+
+    sysTimeInt.LowPart = sysTime.dwLowDateTime;
+    sysTimeInt.HighPart = sysTime.dwHighDateTime;
+    cpuTimeInt.LowPart = cpuTime.dwLowDateTime;
+    cpuTimeInt.HighPart = cpuTime.dwHighDateTime;
+
+    totalTime = sysTimeInt.QuadPart + cpuTimeInt.QuadPart;
+
+    // Times are in 100-nanosecond time units.  So instead of 10-9 use 10-7
+    return totalTime / 10000000.0;
   #else
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return (ts.tv_sec * 1e9) + ts.tv_nsec;
+    return ((double) clock()) / CLOCKS_PER_SEC;
   #endif
 }
 
@@ -104,10 +123,10 @@ VALUE stack_tracy_start(VALUE self) {
 }
 
 VALUE stack_tracy_stop(VALUE self) {
-  int i;
-  VALUE event, events;
+  VALUE events, event;
   ID id;
-  const char *object, *method;
+  const char *method;
+  int i;
 
   rb_remove_event_hook(stack_tracy_trap);
 
@@ -115,14 +134,13 @@ VALUE stack_tracy_stop(VALUE self) {
 
   for (i = 0; i < size - 1; i++) {
     event = rb_funcall(cEventInfo, rb_intern("new"), 0);
-    object = rb_class2name((VALUE) stack[i].object);
 
     rb_iv_set(event, "@event", rb_str_new2(event_name(stack[i].event)));
     rb_iv_set(event, "@file", rb_str_new2(stack[i].file));
     rb_iv_set(event, "@line", rb_int_new(stack[i].line));
     rb_iv_set(event, "@singleton", stack[i].singleton);
-    rb_iv_set(event, "@object", rb_str_new2(object));
-    rb_iv_set(event, "@nsec", rb_int_new(stack[i].nsec));
+    rb_iv_set(event, "@object", rb_str_new2(rb_class2name((VALUE) stack[i].object)));
+    rb_iv_set(event, "@nsec", rb_float_new(stack[i].nsec));
 
     id = (ID) stack[i].method;
     if (&id != NULL) {
@@ -135,7 +153,7 @@ VALUE stack_tracy_stop(VALUE self) {
     rb_ary_push(events, event);
   }
 
-  rb_funcall(mStackTracy, rb_intern("send"), 2, rb_str_new2("store"), events);
+  rb_iv_set(mStackTracy, "@stack_trace", events);
 
   return Qnil;
 }
