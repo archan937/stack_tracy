@@ -5,11 +5,11 @@
     <title>
       stack_tracy@localhost: /<%= File.basename file %>
     </title>
-    <link href="assets/stack_tracy.css" type="text/css" rel="stylesheet" media="screen"/>
-    <link href="assets/bootstrap.css" type="text/css" rel="stylesheet" media="screen"/>
     <script src="assets/jquery.js" type="text/javascript"></script>
     <script src="assets/bootstrap-tab.js" type="text/javascript"></script>
     <script src="assets/stack_tracy.js" type="text/javascript"></script>
+    <link href="assets/bootstrap-tab.css" type="text/css" rel="stylesheet" media="screen"/>
+    <link href="assets/stack_tracy.css" type="text/css" rel="stylesheet" media="screen"/>
   </head>
   <body>
     <div id="page">
@@ -26,47 +26,65 @@
           </li>
         </ul>
         <div class="tab-content">
-          <% cumulatives = {} %>
+          <%
+             depth = events.first[:depth] if events.first
+             excluded_objects = if events.size > 7500
+               %w(Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
+             else
+               []
+             end
+             corrections = []
+             cumulatives = {}
+          %>
           <div class="tab-pane active" id="stack_trace">
             <div class="bold">
               <span class="time">Time</span>
               <span class="duration">Duration</span>
               <span class="call">Call</span>
             </div>
-            <% depth = 0 %>
             <% events.each_with_index do |event, index| %>
             <%
-              cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
-              cumulatives[event[:call]][:duration] += event[:duration]
-              cumulatives[event[:call]][:count] += 1
+               next_event = events[index + 1]
+               skip = excluded_objects.include?(event[:object]) || event[:object].match(/^#/)
+
+               cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
+               cumulatives[event[:call]][:duration] += event[:duration]
+               cumulatives[event[:call]][:count] += 1
+
+               corrections.size.times do |i|
+                 event[:depth] <= corrections[0] ? corrections.shift : break
+               end
             %>
-            <% if depth < event[:depth] %>
-            <div class="group">
-            <% end %>
-            <div>
-              <span class="time">
-                <%= "%.6f" % event[:time] %>
-              </span>
-              <span class="duration">
-                <%= "%.6f" % event[:duration] %>
-              </span>
-              <span class="call">
-                <%= "&nbsp;&nbsp;&nbsp;" * event[:depth] %>
-                <% if (next_event = events[index + 1]) && next_event[:depth] > event[:depth] %>
-                  <a class="toggler" href="#" onclick="return false">
+            <% if skip %>
+              <% corrections.unshift event[:depth] if corrections.empty? || corrections.first != event[:depth] %>
+            <% else %>
+              <% if depth < event[:depth] %>
+                <div class="group">
+              <% elsif depth > event[:depth] %>
+                <%= "</div>" * (depth - event[:depth]) %>
+              <% end %>
+              <div>
+                <span class="time">
+                  <%= "%.6f" % event[:time] %>
+                </span>
+                <span class="duration">
+                  <%= "%.6f" % event[:duration] %>
+                </span>
+                <span class="call">
+                  <%= "&nbsp;&nbsp;&nbsp;" * (event[:depth] - corrections.size) %>
+                  <% if next_event && next_event[:depth] > event[:depth] %>
+                    <a class="toggler" href="#" onclick="return false">
+                      <%= event[:call] %>
+                    </a>
+                  <% else %>
                     <%= event[:call] %>
-                  </a>
-                <% else %>
-                  <%= event[:call] %>
-                <% end %>
-              </span>
-            </div>
-            <% if depth > event[:depth] %>
-            </div>
+                  <% end %>
+                </span>
+              </div>
+              <% depth = event[:depth] %>
             <% end %>
-            <% depth = event[:depth] %>
-            <% end %>
-            <%= "</div>" * depth %>
+          <% end %>
+          <%= "</div>" * [depth - corrections.size, 0].max %>
           </div>
           <div class="tab-pane" id="cumulatives">
             <div class="bold">
@@ -75,7 +93,7 @@
               <span class="count">Count</span>
               <span class="call">Call</span>
             </div>
-            <% cumulatives.each do |call, stats| %>
+            <% cumulatives.sort{|(ak, av), (bk, bv)| bv[:count] <=> av[:count]}.each do |call, stats| %>
             <div>
               <span class="average">
                 <%= "%.6f" % (stats[:duration] / stats[:count].to_f) %>
@@ -87,7 +105,7 @@
                 <%= stats[:count] %>
               </span>
               <span class="call">
-                <%= call %>
+                <%= call.gsub("<", "&lt;").gsub(">", "&gt;") %>
               </span>
             </div>
             <% end %>

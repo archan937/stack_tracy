@@ -29,6 +29,12 @@ ol, ul {
 ul.nav {
   margin-bottom: 25px; }
 
+ul.nav li a {
+  text-decoration: none; }
+
+a {
+  color: #0088CC; }
+
 #page {
   width: 920px;
   margin: auto;

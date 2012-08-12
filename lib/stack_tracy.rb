@@ -70,13 +70,13 @@ module StackTracy
 
 private
 
-  def ui(file)
-    File.expand_path("../../ui/#{file}", __FILE__)
-  end
-
   def process?(event_info, only)
     return true if only.empty?
     only.any?{|x| event_info.matches?(x)}
+  end
+
+  def ui(file)
+    File.expand_path("../../ui/#{file}", __FILE__)
   end
 
 end
