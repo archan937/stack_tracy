@@ -134,7 +134,7 @@ VALUE stack_tracy_stop(VALUE self) {
 
   events = rb_ary_new();
 
-  for (i = 0; i < size - 1; i++) {
+  for (i = 0; i < size - 2; i++) {
     method = rb_id2name((ID) stack[i].method);
     if (method != NULL) {
       event = rb_funcall(cEventInfo, rb_intern("new"), 0);
@@ -157,6 +157,6 @@ VALUE stack_tracy_stop(VALUE self) {
 void Init_stack_tracy() {
   mStackTracy = rb_const_get(rb_cObject, rb_intern("StackTracy"));
   cEventInfo = rb_const_get(mStackTracy, rb_intern("EventInfo"));
-  rb_define_singleton_method(mStackTracy, "start", stack_tracy_start, 0);
-  rb_define_singleton_method(mStackTracy, "stop", stack_tracy_stop, 0);
+  rb_define_singleton_method(mStackTracy, "_start", stack_tracy_start, 0);
+  rb_define_singleton_method(mStackTracy, "_stop", stack_tracy_stop, 0);
 }

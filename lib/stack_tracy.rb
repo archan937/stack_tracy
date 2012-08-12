@@ -12,6 +12,16 @@ module StackTracy
 
   class Error < StandardError; end
 
+  def start
+    _start
+  end
+
+  def stop(options = {})
+    _stop
+    reduce_stack_trace options
+    nil
+  end
+
   def stack_trace
     @stack_trace || []
   end
@@ -69,6 +79,21 @@ module StackTracy
   end
 
 private
+
+  def reduce_stack_trace(options)
+    return if options.empty?
+    exclude = options[:exclude] || []
+    only = options[:only] || []
+    white_listing = !only.empty?
+    trace_filter = Hash[*exclude.zip([true] * exclude.size).concat(only.zip([false] * only.size)).flatten]
+    @stack_trace.delete_if do |event_info|
+      if (val = trace_filter[event_info.object]).nil?
+        white_listing
+      else
+        val
+      end
+    end
+  end
 
   def process?(event_info, only)
     return true if only.empty?

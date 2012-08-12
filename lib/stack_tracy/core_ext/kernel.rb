@@ -2,10 +2,14 @@ require "securerandom"
 
 module Kernel
 
-  def stack_tracy(arg = nil)
+  def stack_tracy(arg = nil, options = {})
+    if arg.is_a?(Hash)
+      options = arg
+      arg = nil
+    end
     StackTracy.start
     yield
-    StackTracy.stop
+    StackTracy.stop options
     if arg == :print
       StackTracy.print
     elsif arg == :dump
