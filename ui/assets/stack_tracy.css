@@ -36,7 +36,7 @@ a {
   color: #0088CC; }
 
 #page {
-  width: 920px;
+  width: 1210px;
   margin: auto;
   padding: 30px 35px;
   background: white;
@@ -46,10 +46,12 @@ a {
   margin-bottom: 20px;
   padding-bottom: 10px;
   font-size: 30px; }
-  #page h1 small {
-    color: #999;
+  #page h1 small, #page h1 small a {
+    color: #909090;
     font-size: 18px;
     font-weight: normal; }
+  #page h1 small a:hover {
+    color: #0088CC; }
 
 #page .tab-pane {
   line-height: 28px; }
@@ -77,7 +79,7 @@ a {
   zoom: 1; }
 
 #page .tab-pane div span.call {
-  width: 625px;
+  width: 950px;
   padding-left: 15px;
   display: -moz-inline-block;
   display: inline-block;
@@ -88,7 +90,7 @@ a {
   width: 65px; }
 
 #page #cumulatives div span.call {
-  width: 565px; }
+  width: 790px; }
 
 #footer {
   padding-top: 45px;

@@ -14,7 +14,7 @@
   <body>
     <div id="page">
       <h1>
-        StackTracy&nbsp; <small><%= file %></small>
+        StackTracy&nbsp; <small><a href="file://<%= file %>"><%= file %></a></small>
       </h1>
       <div class="tabbable">
         <ul class="nav nav-tabs">
@@ -27,7 +27,7 @@
         </ul>
         <div class="tab-content">
           <%
-             depth = events.first[:depth] if events.first
+             current_depth = 0
              excluded_objects = if events.size > 7500
                %w(Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
              else
@@ -44,13 +44,10 @@
             </div>
             <% events.each_with_index do |event, index| %>
             <%
-               next_event = events[index + 1]
                skip = excluded_objects.include?(event[:object]) || event[:object].match(/^#/)
-
                cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
                cumulatives[event[:call]][:duration] += event[:duration]
                cumulatives[event[:call]][:count] += 1
-
                corrections.size.times do |i|
                  event[:depth] <= corrections[0] ? corrections.shift : break
                end
@@ -58,10 +55,10 @@
             <% if skip %>
               <% corrections.unshift event[:depth] if corrections.empty? || corrections.first != event[:depth] %>
             <% else %>
-              <% if depth < event[:depth] %>
+              <% if current_depth < event[:depth] - corrections.size %>
                 <div class="group">
-              <% elsif depth > event[:depth] %>
-                <%= "</div>" * (depth - event[:depth]) %>
+              <% elsif current_depth > event[:depth] - corrections.size %>
+                <%= "</div>" * (current_depth - (event[:depth] - corrections.size)) %>
               <% end %>
               <div>
                 <span class="time">
@@ -72,7 +69,7 @@
                 </span>
                 <span class="call">
                   <%= "&nbsp;&nbsp;&nbsp;" * (event[:depth] - corrections.size) %>
-                  <% if next_event && next_event[:depth] > event[:depth] %>
+                  <% if (next_event = events[index + 1]) && next_event[:depth] > event[:depth] %>
                     <a class="toggler" href="#" onclick="return false">
                       <%= event[:call] %>
                     </a>
@@ -81,10 +78,10 @@
                   <% end %>
                 </span>
               </div>
-              <% depth = event[:depth] %>
+              <% current_depth = event[:depth] - corrections.size %>
             <% end %>
           <% end %>
-          <%= "</div>" * [depth - corrections.size, 0].max %>
+          <%= "</div>" * [current_depth - corrections.size, 0].max %>
           </div>
           <div class="tab-pane" id="cumulatives">
             <div class="bold">

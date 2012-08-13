@@ -73,6 +73,7 @@ module StackTracy
       index = ui("index.html")
       File.open(index, "w"){|f| f.write erb.result(binding)}
       Launchy.open("file://#{index}")
+      nil
     else
       raise Error, "Could not locate StackTracy file"
     end
