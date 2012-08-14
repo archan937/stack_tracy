@@ -21,14 +21,14 @@ module Unit
         file, line = __FILE__, __LINE__ - 2
 
         assert_equal [
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts"},
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "puts" , :call => "IO#puts"    },
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   },
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "puts" , :call => "IO#puts"    },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts"}
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"},
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    },
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"}
         ], StackTracy.stack_trace.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -50,10 +50,10 @@ module Unit
         file, line = __FILE__, __LINE__ - 2
 
         assert_equal [
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts", :depth => 0},
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 2},
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 2}
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2},
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2}
         ], StackTracy.select.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -70,10 +70,10 @@ module Unit
         file, line = __FILE__, __LINE__ - 2
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 2},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 2}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2}
         ], StackTracy.select("*").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -83,7 +83,7 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts", :call => "Kernel#puts", :depth => 0}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts", :call => "Kernel#puts", :depth => 0}
         ], StackTracy.select("Kernel").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -93,9 +93,9 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "puts" , :call => "IO#puts" , :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 1},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 1}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
         ], StackTracy.select("IO").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -105,9 +105,26 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "puts" , :call => "IO#puts" , :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 1},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 1}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
+        ], StackTracy.select("IO*").collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            assert hash.delete(:duration)
+            hash.delete(:time)
+          end
+        }
+
+        assert_equal [
+        ], StackTracy.select("I*").collect{ |event_info|
+          event_info.to_hash
+        }
+
+        assert_equal [
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
         ], StackTracy.select("IO#").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -117,8 +134,8 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 0}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 0}
         ], StackTracy.select("IO#w*").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -128,8 +145,8 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO", :method => "write", :call => "IO#write", :depth => 0}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 0}
         ], StackTracy.select("IO#write").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -139,8 +156,8 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts", :call => "Kernel#puts", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "puts", :call => "IO#puts"    , :depth => 1}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts", :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts", :call => "IO#puts"    , :depth => 1}
         ], StackTracy.select("*#puts").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -150,9 +167,9 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 1}
         ], StackTracy.select(%w(Kernel #write)).collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -162,9 +179,9 @@ module Unit
         }
 
         assert_equal [
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "Kernel", :method => "puts" , :call => "Kernel#puts", :depth => 0},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1},
-          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => "IO"    , :method => "write", :call => "IO#write"   , :depth => 1}
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 1},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 1}
         ], StackTracy.select("Kernel IO#write").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)

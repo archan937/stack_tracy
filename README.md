@@ -44,33 +44,33 @@ Once you have recorded stack events, you can call the following methods:
 
     [2] pry(main)> StackTracy.stack_trace.inspect
     => [
-      #<StackTracy::EventInfo:0x0000010154b418 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="Kernel", @method="puts", @nsec=1344465432463251968>,
-      #<StackTracy::EventInfo:0x0000010154b350 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="puts", @nsec=1344465432463272960>,
-      #<StackTracy::EventInfo:0x0000010154b1c0 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463288064>,
-      #<StackTracy::EventInfo:0x0000010154b0a8 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463331072>,
-      #<StackTracy::EventInfo:0x0000010154af68 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463344896>,
-      #<StackTracy::EventInfo:0x0000010154ae50 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="write", @nsec=1344465432463365888>,
-      #<StackTracy::EventInfo:0x0000010154ad38 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="IO", @method="puts", @nsec=1344465432463378944>,
-      #<StackTracy::EventInfo:0x0000010154ac20 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object="Kernel", @method="puts", @nsec=1344465432463390976>]
+      #<StackTracy::EventInfo:0x0000010154b418 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object=Kernel, @method="puts", @nsec=1344465432463251968>,
+      #<StackTracy::EventInfo:0x0000010154b350 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="puts", @nsec=1344465432463272960>,
+      #<StackTracy::EventInfo:0x0000010154b1c0 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="write", @nsec=1344465432463288064>,
+      #<StackTracy::EventInfo:0x0000010154b0a8 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="write", @nsec=1344465432463331072>,
+      #<StackTracy::EventInfo:0x0000010154af68 @event="c-call", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="write", @nsec=1344465432463344896>,
+      #<StackTracy::EventInfo:0x0000010154ae50 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="write", @nsec=1344465432463365888>,
+      #<StackTracy::EventInfo:0x0000010154ad38 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object=IO, @method="puts", @nsec=1344465432463378944>,
+      #<StackTracy::EventInfo:0x0000010154ac20 @event="c-return", @file="(pry)", @line=2, @singleton=false, @object=Kernel, @method="puts", @nsec=1344465432463390976>]
     ]
 
 `StackTracy.select` - returns (optionally filtered) recorded stack events for printing purposes (`array` of `Hash` instances)
 
     [3] pry(main)> StackTracy.select.inspect
     => [
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05},
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852762112, :call=>"IO#write", :depth=>2, :duration=>3.4816e-05},
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"write", :nsec=>1344464282852811008, :call=>"IO#write", :depth=>2, :duration=>2.0992e-05}
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>Kernel, :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>IO, :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>IO, :method=>"write", :nsec=>1344464282852762112, :call=>"IO#write", :depth=>2, :duration=>3.4816e-05},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>IO, :method=>"write", :nsec=>1344464282852811008, :call=>"IO#write", :depth=>2, :duration=>2.0992e-05}
     ]
     [4] pry(main)> StackTracy.select(%w(Kernel)).inspect
     => [
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024}
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>Kernel, :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024}
     ]
     [5] pry(main)> StackTracy.select("Kernel IO#puts").inspect
     => [
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"Kernel", :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
-      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>"IO", :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05}
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>Kernel, :method=>"puts", :nsec=>1344464282852728064, :call=>"Kernel#puts", :depth=>0, :duration=>0.000129024},
+      {:event=>"c-call", :file=>"(pry)", :line=>2, :singleton=>false, :object=>IO, :method=>"puts", :nsec=>1344464282852748032, :call=>"IO#puts", :depth=>1, :duration=>9.7024e-05}
     ]
 
 `StackTracy.print` - prints (optionally filtered) recorded stack events as a tree
