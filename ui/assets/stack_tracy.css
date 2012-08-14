@@ -38,7 +38,7 @@ a {
 #page {
   width: 1210px;
   margin: auto;
-  padding: 30px 35px;
+  padding: 40px 35px 35px 35px;
   background: white;
   border: 1px solid #DDD; }
 
