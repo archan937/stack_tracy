@@ -38,9 +38,9 @@ Or you can use the `stack_tracy` convenience method which records stack events w
 
 ### Reducing recorded stack events
 
-As StackTracy records every `call` and `return` event, the resulted stack tree can get immense huge. Fortunately, you can reduce the recorded stack events by passing options to `StackTracy.start`.
+As StackTracy records every `call` and `return` event, the resulted stack tree can get immense huge. Fortunately, you can reduce the recorded stack events by passing options to `StackTracy.start` or `stack_tracy`.
 
-`StackTracy.start` accepts a `Hash` with at least one of the following keys:
+They accept an options `Hash` with at least one of the following keys:
 
 * `:only` - Matching events will be recorded
 * `:exclude` - Matching events will be ignored
@@ -276,8 +276,10 @@ You can also run a single test:
 ## TODO
 
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
-* Improve the stack events HTML page: (un)folding and filtering (based on duration and/or call) and ordering
-* Hook into Sinatra (and Rails?) requests
+* Improve the stack events HTML page: sorting within the cumulatives tab
+* Easily hook into Sinatra (and Rails?) requests
+* Add StackTracy.config for default stack tree reduction behaviour
+* Improve stack tree reduction by checking on method level
 
 ## Contact me
 
