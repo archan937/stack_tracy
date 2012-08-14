@@ -67,7 +67,8 @@ static void stack_tracy_trap(rb_event_flag_t event, VALUE data, VALUE self, ID i
 static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID id, VALUE klass)
 #endif
 {
-  bool singleton = false;
+  int i;
+  bool singleton = false, match = false;
   EventInfo info;
 
   if (event == RUBY_EVENT_CALL || event == RUBY_EVENT_C_CALL) {
@@ -97,29 +98,82 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
     #endif
   }
 
-  if ((ID *) id != NULL) {
-    info.event = event;
-    info.file = (char *) rb_sourcefile();
-    info.line = rb_sourceline();
-    info.singleton = singleton;
-    info.object = (VALUE *)(singleton ? self : klass);
-    info.method = (ID *)id;
-    info.nsec = nsec();
+  info.method = (ID *) id;
 
-    size = size + 1;
-    stack = (EventInfo *) realloc (stack, size * sizeof(EventInfo));
-    stack[size - 1] = info;
+  if (info.method != NULL) {
+    info.object = (VALUE *)(singleton ? self : klass);
+
+    if (info.object) {
+      for (i = 0; i < exclude_size; i++) {
+        if (((VALUE) exclude[i].klass) == (VALUE) info.object) {
+          return;
+        }
+      }
+
+      if (only_size > 0) {
+        match = false;
+        for (i = 0; i < only_size; i++) {
+          match = match || (((VALUE) only[i].klass) == (VALUE) info.object);
+        }
+        if (!match) {
+          return;
+        }
+      }
+
+      info.event = event;
+      info.file = (char *) rb_sourcefile();
+      info.line = rb_sourceline();
+      info.singleton = singleton;
+      info.nsec = nsec();
+
+      stack_size = stack_size + 1;
+      stack = (EventInfo *) realloc (stack, stack_size * sizeof(EventInfo));
+      stack[stack_size - 1] = info;
+    }
   }
 }
 
-VALUE stack_tracy_start(VALUE self) {
+VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names) {
+  int i;
+  char *token;
+
+  token = strtok((char *) RSTRING_PTR(only_names), " ");
+  only_size = 0;
+
+  while (token != NULL) {
+    only_size++;
+    only = (RubyClass *) realloc (only, only_size * sizeof(RubyClass));
+
+    RubyClass klass;
+    klass.name = (char *) token;
+    klass.klass = (VALUE *) rb_path2class((char *) token);
+    only[only_size - 1] = klass;
+
+    token = strtok(NULL, " ");
+  }
+
+  token = strtok((char *) RSTRING_PTR(exclude_names), " ");
+  exclude_size = 0;
+
+  while (token != NULL) {
+    exclude_size++;
+    exclude = (RubyClass *) realloc (exclude, exclude_size * sizeof(RubyClass));
+
+    RubyClass klass;
+    klass.name = (char *) token;
+    klass.klass = (VALUE *) rb_path2class((char *) token);
+    exclude[exclude_size - 1] = klass;
+
+    token = strtok(NULL, " ");
+  }
+
   #if defined(RB_EVENT_HOOKS_HAVE_CALLBACK_DATA) || defined(RUBY_EVENT_VM)
     rb_add_event_hook(stack_tracy_trap, RUBY_EVENT_CALL | RUBY_EVENT_C_CALL | RUBY_EVENT_RETURN | RUBY_EVENT_C_RETURN, 0);
   #else
     rb_add_event_hook(stack_tracy_trap, RUBY_EVENT_CALL | RUBY_EVENT_C_CALL | RUBY_EVENT_RETURN | RUBY_EVENT_C_RETURN);
   #endif
 
-  size = 0, trace = false;
+  stack_size = 0, trace = false;
 
   return Qnil;
 }
@@ -134,7 +188,7 @@ VALUE stack_tracy_stop(VALUE self) {
 
   events = rb_ary_new();
 
-  for (i = 0; i < size - 2; i++) {
+  for (i = 0; i < stack_size - 2; i++) {
     method = rb_id2name((ID) stack[i].method);
     if (method != NULL) {
       event = rb_funcall(cEventInfo, rb_intern("new"), 0);
@@ -142,7 +196,7 @@ VALUE stack_tracy_stop(VALUE self) {
       rb_iv_set(event, "@file", rb_str_new2(stack[i].file));
       rb_iv_set(event, "@line", rb_int_new(stack[i].line));
       rb_iv_set(event, "@singleton", stack[i].singleton);
-      rb_iv_set(event, "@object", rb_str_new2(rb_class2name((VALUE) stack[i].object)));
+      rb_iv_set(event, "@object", (VALUE) stack[i].object);
       rb_iv_set(event, "@method", rb_str_new2(method));
       rb_iv_set(event, "@nsec", rb_float_new(stack[i].nsec));
       rb_ary_push(events, event);
@@ -157,6 +211,6 @@ VALUE stack_tracy_stop(VALUE self) {
 void Init_stack_tracy() {
   mStackTracy = rb_const_get(rb_cObject, rb_intern("StackTracy"));
   cEventInfo = rb_const_get(mStackTracy, rb_intern("EventInfo"));
-  rb_define_singleton_method(mStackTracy, "_start", stack_tracy_start, 0);
+  rb_define_singleton_method(mStackTracy, "_start", stack_tracy_start, 2);
   rb_define_singleton_method(mStackTracy, "_stop", stack_tracy_stop, 0);
 }

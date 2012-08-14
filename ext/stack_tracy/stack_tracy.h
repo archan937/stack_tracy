@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <sys/time.h>
+#include <string.h>
 
 typedef struct event_info_t {
   rb_event_flag_t event;
@@ -16,11 +17,19 @@ typedef struct event_info_t {
   double nsec;
 } EventInfo;
 
+typedef struct ruby_class_t {
+  const char *name;
+  const VALUE *klass;
+} RubyClass;
+
 static VALUE mStackTracy;
 static VALUE cEventInfo;
-static EventInfo *stack;
 
-static int size;
+static EventInfo *stack;
+static RubyClass *only;
+static RubyClass *exclude;
+
+static int stack_size, only_size, exclude_size;
 static bool trace;
 
 static double nsec();
@@ -32,7 +41,7 @@ static void stack_tracy_trap(rb_event_flag_t event, VALUE data, VALUE self, ID i
 static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID id, VALUE klass);
 #endif
 
-VALUE stack_tracy_start(VALUE self);
+VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names);
 VALUE stack_tracy_stop(VALUE self);
 void Init_stack_tracy();
 

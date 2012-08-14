@@ -9,7 +9,7 @@ module StackTracy
     def self.to_hashes(csv)
       CSV.parse(csv.force_encoding("ISO-8859-1").encode("utf-8", replace: nil), :headers => true, :col_sep => ";").collect do |row|
         {
-          :event => row[0]     , :file => row[1]     , :line => row[2].to_i, :singleton => row[3] == "true", :object   => row[4]      , :method => row[5],
+          :event => row[0]     , :file => row[1]     , :line => row[2].to_i, :singleton => row[3] == "true", :object   => "#{row[4]}" , :method => row[5],
           :nsec  => row[6].to_f, :time => row[7].to_f, :call => row[8]     , :depth     => row[9].to_i     , :duration => row[10].to_f
         }
       end

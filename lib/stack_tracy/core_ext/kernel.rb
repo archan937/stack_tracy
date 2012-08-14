@@ -7,9 +7,9 @@ module Kernel
       options = arg
       arg = nil
     end
-    StackTracy.start
+    StackTracy.start options
     yield
-    StackTracy.stop options
+    StackTracy.stop
     if arg == :print
       StackTracy.print
     elsif arg == :dump
