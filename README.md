@@ -36,6 +36,46 @@ Or you can use the `stack_tracy` convenience method which records stack events w
     [1] pry(main)>   puts "testing"
     [1] pry(main)> end
 
+### Reducing recorded stack events
+
+As StackTracy records every `call` and `return` event, the resulted stack tree can get immense huge. Fortunately, you can reduce the recorded stack events by passing options to `StackTracy.start`.
+
+`StackTracy.start` accepts a `Hash` with at least one of the following keys:
+
+* `:only` - Matching events will be recorded
+* `:exclude` - Matching events will be ignored
+
+The value can be either a String (optionally whitespace-delimited) or an array of strings containing `class` and/or `module` names. You can use the wildcard (`*`) for matching classes and/or modules within that namespace.
+
+#### Some examples
+
+You can pass options as follows:
+
+    [1] pry(main)> StackTracy.start :only => ["Foo"]
+
+When using the convenience method:
+
+    [2] pry(main)> stack_tracy(:only => "Foo") { puts "testing" }
+    [3] pry(main)> stack_tracy(:dump, {:only => "Foo*"}) { puts "testing" }
+    [4] pry(main)> stack_tracy(:open, {:exclude => ["Array", "Hash"]}) { puts "testing" }
+
+Let's say that you have the following code:
+
+    class Foo
+      class Bar; end
+      module CandyBar; end
+    end
+
+    class FooBar; end
+
+A couple of examples:
+
+* `:only => "Foo"` records `Foo`
+* `:only => "Foo*"` records `Foo`, `Foo::Bar` and `Foo::CandyBar`
+* `:only => "Foo*", :exclude => "Foo::Bar"` records `Foo` and `Foo::CandyBar`
+* `:exclude => ["Foo*", "FooBar"]` records everything except for `Foo`, `Foo::Bar`, `Foo::CandyBar` and `FooBar`
+* `:only => "Foo* Kernel"` records `Foo`, `Foo::Bar`, `Foo::CandyBar` and `Kernel`
+
 ### Using recorded stack events
 
 Once you have recorded stack events, you can call the following methods:

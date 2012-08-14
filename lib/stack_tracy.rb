@@ -14,7 +14,7 @@ module StackTracy
 
   def start(options = {})
     # options[:exclude] ||= "Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time"
-    _start [options[:only] || []].flatten.join(" "), [options[:exclude] || []].flatten.join(" ")
+    _start mod_names(options[:only]), mod_names(options[:exclude])
     nil
   end
 
@@ -81,6 +81,35 @@ module StackTracy
   end
 
 private
+
+  def mod_names(arg)
+    names = [arg || []].flatten.sort.join(" ")
+    if names.include?("*")
+      names.split(/\s/).collect do |name|
+        name.include?("*") ? mods_within([constantize(name.gsub("*", ""))]).collect(&:name) : spec
+      end.flatten.sort.join(" ")
+    else
+      names
+    end
+  end
+
+  def constantize(name)
+    name.split("::").inject(Kernel){|m, x| m.const_get x}
+  end
+
+  def mods_within(mods, initial_array = nil)
+    (initial_array || mods).tap do |array|
+      mods.each do |mod|
+        mod.constants.each do |c|
+          const = mod.const_get c
+          if !array.include?(const) && (const.is_a?(Class) || const.is_a?(Module)) && const.name.match(/^#{mod.name}/)
+            array << const
+            mods_within([const], array)
+          end
+        end
+      end
+    end
+  end
 
   def process?(event_info, only)
     return true if only.empty?
