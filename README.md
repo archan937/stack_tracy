@@ -276,7 +276,6 @@ You can also run a single test:
 ## TODO
 
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
-* Improve the stack events HTML page: sorting within the cumulatives tab
 * Easily hook into Sinatra (and Rails?) requests
 * Add StackTracy.config for default stack tree reduction behaviour
 * Improve stack tree reduction by checking on method level
@@ -287,7 +286,8 @@ For support, remarks and requests, please mail me at [paul.engel@holder.nl](mail
 
 ## Credit
 
-Two functions within the StackTracy C implementation are taken from [ruby-prof](https://github.com/rdp/ruby-prof).
+* Two functions within the StackTracy C implementation are taken from [ruby-prof](https://github.com/rdp/ruby-prof).
+* The table sort within the Cumulatives tab is implemented with [TinySort](http://tinysort.sjeiti.com/).
 
 ## License
 

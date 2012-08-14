@@ -7,6 +7,7 @@
     </title>
     <script src="assets/jquery.js" type="text/javascript"></script>
     <script src="assets/bootstrap-tab.js" type="text/javascript"></script>
+    <script src="assets/tiny_sort.js" type="text/javascript"></script>
     <script src="assets/stack_tracy.js" type="text/javascript"></script>
     <link href="assets/bootstrap-tab.css" type="text/css" rel="stylesheet" media="screen"/>
     <link href="assets/stack_tracy.css" type="text/css" rel="stylesheet" media="screen"/>
@@ -37,11 +38,12 @@
              cumulatives = {}
           %>
           <div class="tab-pane active" id="stack_trace">
-            <div class="bold">
+            <div class="head">
               <span class="time">Time</span>
               <span class="duration">Duration</span>
               <span class="call">Call</span>
             </div>
+            <div class="body">
             <% events.each_with_index do |event, index| %>
             <%
                skip = excluded_objects.include?(event[:object]) || event[:object].match(/^#/)
@@ -81,32 +83,35 @@
               </div>
               <% current_depth = event[:depth] - corrections.size %>
             <% end %>
-          <% end %>
-          <%= "</div>" * current_depth %>
+            <% end %>
+            <%= "</div>" * current_depth %>
+            </div>
           </div>
           <div class="tab-pane" id="cumulatives">
-            <div class="bold">
-              <span class="average">Average</span>
-              <span class="duration">Duration</span>
-              <span class="count">Count</span>
-              <span class="call">Call</span>
+            <div class="head">
+              <span class="average"><a href="javascript:StackTracy.sort(0)">Average</a></span>
+              <span class="duration"><a href="javascript:StackTracy.sort(1)">Duration</a></span>
+              <span class="count"><a href="javascript:StackTracy.sort(2)">Count</a></span>
+              <span class="call"><a href="javascript:StackTracy.sort(3)">Call</a></span>
             </div>
+            <div class="body">
             <% cumulatives.sort{|(ak, av), (bk, bv)| bv[:average] <=> av[:average]}.each do |call, stats| %>
             <div>
-              <span class="average">
+              <span class="average" abbr="<%= "%.6f" % stats[:average] %>">
                 <%= "%.6f" % stats[:average] %>
               </span>
-              <span class="duration">
+              <span class="duration" abbr="<%= "%.6f" % stats[:duration] %>">
                 <%= "%.6f" % stats[:duration] %>
               </span>
-              <span class="count">
+              <span class="count" abbr="<%= stats[:count] %>">
                 <%= stats[:count] %>
               </span>
-              <span class="call">
+              <span class="call" abbr="<%= call.gsub("<", "&lt;").gsub(">", "&gt;") %>">
                 <%= call.gsub("<", "&lt;").gsub(">", "&gt;") %>
               </span>
             </div>
             <% end %>
+            </div>
           </div>
         </div>
       </div>

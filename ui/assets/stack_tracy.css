@@ -59,12 +59,14 @@ a {
 #page .tab-pane div {
   border-bottom: 1px solid #EFEFEF; }
 
-#page .tab-pane div.group {
-  border: 0; }
-
-#page .tab-pane div.bold {
+#page .tab-pane div.head {
   padding-bottom: 4px;
   font-weight: bold; }
+  #page .tab-pane div.head a {
+    color: #222; }
+
+#page .tab-pane div.group {
+  border: 0; }
 
 #page .tab-pane div span.time,
 #page .tab-pane div span.average,
