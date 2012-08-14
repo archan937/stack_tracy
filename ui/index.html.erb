@@ -82,7 +82,7 @@
               <% current_depth = event[:depth] - corrections.size %>
             <% end %>
           <% end %>
-          <%= "</div>" * [current_depth - corrections.size, 0].max %>
+          <%= "</div>" * current_depth %>
           </div>
           <div class="tab-pane" id="cumulatives">
             <div class="bold">
