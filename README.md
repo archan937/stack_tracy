@@ -160,7 +160,7 @@ or the following within the Terminal:
 
 Your default browser will be launched in which the stack events will be displayed.
 
-When passing no path, `tracy` will look for `./stack_events.csv` and display it in the browser:
+When passing no path, `tracy` will look for `./stack_events.csv` and display it in the browser. When not found, it will display the last processed stack tree:
 
     $ tracy
 

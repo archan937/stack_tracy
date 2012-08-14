@@ -65,14 +65,16 @@ module StackTracy
   end
 
   def open(path = nil)
+    index = ui("index.html")
     if File.exists?(file = File.expand_path(path || "."))
       file = (File.extname(file) == ".csv") ? file : File.join(file, "stack_events.csv")
     end
-    if File.exists? file
+    if File.exists?(file)
       events = StackTracy::EventInfo.to_hashes File.read(file)
       erb = ERB.new File.new(ui("index.html.erb")).read
-      index = ui("index.html")
       File.open(index, "w"){|f| f.write erb.result(binding)}
+    end
+    if File.exists?(index)
       Launchy.open("file://#{index}")
       nil
     else
