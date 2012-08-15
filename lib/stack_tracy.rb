@@ -10,11 +10,18 @@ require "stack_tracy/version"
 module StackTracy
   extend self
 
+  @options = Struct.new(:only, :exclude).new
+
   class Error < StandardError; end
+
+  def config
+    yield @options
+  end
 
   def start(options = {})
     # options[:exclude] ||= "Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time"
-    _start mod_names(options[:only]), mod_names(options[:exclude])
+    opts = merge_options(options)
+    _start mod_names(opts[:only]), mod_names(opts[:exclude])
     nil
   end
 
@@ -83,6 +90,10 @@ module StackTracy
   end
 
 private
+
+  def merge_options(hash = {})
+    Hash[@options.each_pair.to_a].merge(hash.inject({}){|h, (k, v)| h.merge!(k.to_sym => v)})
+  end
 
   def mod_names(arg)
     names = [arg || []].flatten.sort.join(" ")

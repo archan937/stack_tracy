@@ -279,7 +279,6 @@ You can also run a single test:
 
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
 * Easily hook into Sinatra (and Rails?) requests
-* Add StackTracy.config for default stack tree reduction behaviour
 * Improve stack tree reduction by checking on method level
 
 ## Contact me

@@ -4,7 +4,15 @@ module Unit
   class TestTracy < MiniTest::Unit::TestCase
 
     describe StackTracy do
+      after do
+        StackTracy.config do |c|
+          c.only = nil
+          c.exclude = nil
+        end
+      end
+
       it "should respond to methods as expected" do
+        assert StackTracy.respond_to?(:config)
         assert StackTracy.respond_to?(:start)
         assert StackTracy.respond_to?(:stop)
         assert StackTracy.respond_to?(:stack_trace)
@@ -12,6 +20,21 @@ module Unit
         assert StackTracy.respond_to?(:print)
         assert StackTracy.respond_to?(:dump)
         assert StackTracy.respond_to?(:open)
+      end
+
+      it "should be configurable" do
+        StackTracy.config do |c|
+          assert_equal true, c.is_a?(Struct)
+          assert_equal [:only, :exclude], c.members
+          c.only = "Kernel"
+          c.exclude = ["IO", "String"]
+        end
+
+        assert_equal({:only => "Kernel", :exclude => ["IO", "String"]}, StackTracy.send(:merge_options))
+        assert_equal({:only => "Object", :exclude => ["IO", "String"]}, StackTracy.send(:merge_options, {:only => "Object"}))
+        assert_equal({:only => "Object", :exclude => nil}, StackTracy.send(:merge_options, {:only => "Object", :exclude => nil}))
+        assert_equal({:only => "Paul", :exclude => "Foo"}, StackTracy.send(:merge_options, {"only" => "Paul", "exclude" => "Foo"}))
+        assert_equal({:only => nil, :exclude => nil}, StackTracy.send(:merge_options, {:only => nil, :exclude => nil}))
       end
 
       it "should have the expected stack trace" do
@@ -41,6 +64,25 @@ module Unit
 
         assert !StackTracy.stack_trace.first.return?
         assert StackTracy.stack_trace.last.return?
+
+        StackTracy.config do |c|
+          c.exclude = ["IO"]
+        end
+
+        stack_tracy do
+          puts "testing"
+        end
+        file, line = __FILE__, __LINE__ - 2
+
+        assert_equal [
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"},
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"}
+        ], StackTracy.stack_trace.collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            hash.delete(:time)
+          end
+        }
       end
 
       it "should return a printable version of the stack trace" do
