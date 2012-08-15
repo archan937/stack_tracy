@@ -5,6 +5,7 @@ require "launchy"
 
 require "stack_tracy/core_ext"
 require "stack_tracy/event_info"
+require "stack_tracy/sinatra"
 require "stack_tracy/version"
 
 module StackTracy
