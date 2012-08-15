@@ -35,6 +35,21 @@ module Unit
         assert_equal({:only => "Object", :exclude => nil}, StackTracy.send(:merge_options, {:only => "Object", :exclude => nil}))
         assert_equal({:only => "Paul", :exclude => "Foo"}, StackTracy.send(:merge_options, {"only" => "Paul", "exclude" => "Foo"}))
         assert_equal({:only => nil, :exclude => nil}, StackTracy.send(:merge_options, {:only => nil, :exclude => nil}))
+
+        assert_equal(
+          "Array BasicObject Enumerable Fixnum Float Foo Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+          StackTracy.send(:mod_names, [:core, "Foo"])
+        )
+
+        assert_equal(
+          "ActiveRecord::Base",
+          StackTracy.send(:mod_names, :active_record)
+        )
+
+        assert_equal(
+          "DataMapper::Resource",
+          StackTracy.send(:mod_names, :data_mapper)
+        )
       end
 
       it "should have the expected stack trace" do
@@ -68,7 +83,6 @@ module Unit
         StackTracy.config do |c|
           c.exclude = ["IO"]
         end
-
         stack_tracy do
           puts "testing"
         end
@@ -83,6 +97,15 @@ module Unit
             hash.delete(:time)
           end
         }
+
+        StackTracy.config do |c|
+          c.exclude = :core
+        end
+        stack_tracy do
+          puts "testing"
+        end
+
+        assert_equal true, StackTracy.stack_trace.empty?
       end
 
       it "should return a printable version of the stack trace" do

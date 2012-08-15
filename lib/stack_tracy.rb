@@ -10,6 +10,11 @@ require "stack_tracy/version"
 module StackTracy
   extend self
 
+  PRESETS = {
+    :core => "Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+    :active_record => "ActiveRecord::Base",
+    :data_mapper => "DataMapper::Resource"
+  }
   @options = Struct.new(:only, :exclude).new
 
   class Error < StandardError; end
@@ -19,7 +24,6 @@ module StackTracy
   end
 
   def start(options = {})
-    # options[:exclude] ||= "Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time"
     opts = merge_options(options)
     _start mod_names(opts[:only]), mod_names(opts[:exclude])
     nil
@@ -96,14 +100,14 @@ private
   end
 
   def mod_names(arg)
-    names = [arg || []].flatten.sort.join(" ")
+    names = PRESETS.inject([arg || []].flatten.collect(&:to_s).join(" ")){|s, (k, v)| s.gsub k.to_s, v}
     if names.include?("*")
       names.split(/\s/).collect do |name|
         name.include?("*") ? mods_within([constantize(name.gsub("*", ""))]).collect(&:name) : spec
-      end.flatten.sort.join(" ")
+      end.flatten
     else
-      names
-    end
+      names.split(/\s/)
+    end.sort.join(" ")
   end
 
   def constantize(name)

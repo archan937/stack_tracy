@@ -280,6 +280,7 @@ You can also run a single test:
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
 * Easily hook into Sinatra (and Rails?) requests
 * Improve stack tree reduction by checking on method level
+* Correct `StackTracy::PRESETS` regarding `:active_record` and `:data_mapper`
 
 ## Contact me
 
