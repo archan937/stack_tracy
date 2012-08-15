@@ -12,11 +12,11 @@ module StackTracy
   extend self
 
   PRESETS = {
-    :core => "Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+    :core => "Array BasicObject Enumerable Fixnum Float Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
     :active_record => "ActiveRecord::Base",
     :data_mapper => "DataMapper::Resource"
   }
-  @options = Struct.new(:only, :exclude).new
+  @options = Struct.new(:dump_dir, :only, :exclude).new(Dir::tmpdir)
 
   class Error < StandardError; end
 

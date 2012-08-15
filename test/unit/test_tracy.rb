@@ -37,7 +37,7 @@ module Unit
         assert_equal({:only => nil, :exclude => nil}, StackTracy.send(:merge_options, {:only => nil, :exclude => nil}))
 
         assert_equal(
-          "Array BasicObject Enumerable Fixnum Float Foo Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+          "Array BasicObject Enumerable Fixnum Float Foo Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
           StackTracy.send(:mod_names, [:core, "Foo"])
         )
 
