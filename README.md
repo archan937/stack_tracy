@@ -10,6 +10,8 @@ StackTracy is created for simply investigating your stack trace for called metho
 
 The gem is partly written in C to reduce the application performance as minimal as possible.
 
+![Dick .. Stack Tracy](http://codehero.es/images/stack_tracy.jpg)
+
 ## Installation
 
 ### Add `StackTracy` to your Gemfile
