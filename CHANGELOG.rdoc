@@ -1,5 +1,9 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.2 (August 16, 2012)
+
+* Tackling non-calculated durations within ui/index.html.erb
+
 == Version 0.1.1 (August 16, 2012)
 
 * Not excluding the last two stack trace events anymore
