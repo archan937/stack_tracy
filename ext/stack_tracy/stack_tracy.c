@@ -188,7 +188,7 @@ VALUE stack_tracy_stop(VALUE self) {
 
   events = rb_ary_new();
 
-  for (i = 0; i < stack_size - 2; i++) {
+  for (i = 0; i < stack_size; i++) {
     method = rb_id2name((ID) stack[i].method);
     if (method != NULL) {
       event = rb_funcall(cEventInfo, rb_intern("new"), 0);
