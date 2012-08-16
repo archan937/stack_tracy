@@ -82,21 +82,23 @@ module StackTracy
     end
   end
 
-  def open(path = nil)
-    unless path && path.match(/\.csv$/)
-      path = Dir[File.join(path || @options.dump_dir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
-      path ||= Dir[File.join(path || Dir::tmpdir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+  def open(path = nil, use_current_stack_trace = false)
+    unless use_current_stack_trace
+      unless path && path.match(/\.csv$/)
+        path = Dir[File.join(path || @options.dump_dir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+        path ||= Dir[File.join(path || Dir::tmpdir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+      end
+      if path
+        file = File.expand_path(path)
+      else
+        raise Error, "Could not locate StackTracy file"
+      end
     end
 
-    if path
-      index = ui("index.html")
-      file = File.expand_path(path)
-    else
-      raise Error, "Could not locate StackTracy file"
-    end
+    index = ui("index.html")
 
-    if File.exists?(file)
-      events = StackTracy::EventInfo.to_hashes File.read(file)
+    if use_current_stack_trace || (file && File.exists?(file))
+      events = use_current_stack_trace ? select : StackTracy::EventInfo.to_hashes(File.read(file))
       erb = ERB.new File.new(ui("index.html.erb")).read
       File.open(index, "w"){|f| f.write erb.result(binding)}
     elsif path && path.match(/\.csv$/)

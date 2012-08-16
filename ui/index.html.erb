@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <title>
-      stack_tracy@localhost: /<%= File.basename file %>
+      stack_tracy@localhost: /<%= File.basename(file) if file %>
     </title>
     <script src="assets/jquery.js" type="text/javascript"></script>
     <script src="assets/bootstrap-tab.js" type="text/javascript"></script>
@@ -46,7 +46,7 @@
             <div class="body">
             <% events.each_with_index do |event, index| %>
             <%
-               skip = excluded_objects.include?(event[:object]) || event[:object].match(/^#/)
+               skip = excluded_objects.include?(event[:object]) || "#{event[:object]}".match(/^#/)
                cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
                cumulatives[event[:call]][:duration] += event[:duration]
                cumulatives[event[:call]][:count] += 1

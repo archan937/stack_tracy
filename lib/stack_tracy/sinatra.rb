@@ -28,7 +28,7 @@ module StackTracy
   private
 
     def open(match)
-      StackTracy.open match.to_s.empty? ? nil : match
+      StackTracy.open match.to_s.empty? ? nil : match, (match.to_s.empty? && @arg.to_s != "dump" && !StackTracy.stack_trace.empty?)
       [200, {"Content-Type" => "text/html;charset=utf-8", "Content-Length" => Rack::Utils.bytesize("").to_s}, ""]
     end
 
