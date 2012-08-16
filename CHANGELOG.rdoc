@@ -1,5 +1,9 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.1 (August 16, 2012)
+
+* Not excluding the last two stack trace events anymore
+
 == Version 0.1.0 (August 16, 2012)
 
 * Initial release
