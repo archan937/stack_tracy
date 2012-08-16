@@ -2,7 +2,7 @@
 
 # StackTracy
 
-Investigate and detect slow methods within your stack trace
+Investigate and detect slow methods within the stack trace of your Ruby (optionally Sinatra) application
 
 ## Introduction
 
@@ -172,7 +172,7 @@ or the following within the Terminal:
 
 Your default browser will be launched in which the stack events will be displayed.
 
-When passing no path, `tracy` will look for `./stack_events.csv` and display it in the browser. When not found, it will display the last processed stack tree:
+When passing no path, `tracy` will look for `stack_events-<random generated postfix>.csv` in either the default dump directory or in `Dir::tmpdir` and display it in the browser. When not found, it will display the last compiled stack tree when available:
 
     $ tracy
 
@@ -184,7 +184,7 @@ As already mentioned, there is a convenience method called `stack_tracy` conveni
 
 Record stack events executed within a block:
 
-    [1] pry(main)> stack_tracy "result.csv" do
+    [1] pry(main)> stack_tracy do
     [1] pry(main)>   puts "testing"
     [1] pry(main)> end
 
@@ -211,7 +211,7 @@ Its equivalent:
 
 #### Passing `:dump`
 
-Record stack events executed within a block and write the obtained data to `./stack_events-<random generated postfix>.csv`:
+Record stack events executed within a block and write the obtained data to `<default dump directory>/stack_events-<random generated postfix>.csv`:
 
     [1] pry(main)> stack_tracy :dump do
     [1] pry(main)>   puts "testing"
@@ -285,17 +285,17 @@ You can easily hook `StackTracy` into [Sinatra](http://www.sinatrarb.com) reques
 
 **Note**: Make sure you have the `sinatra` and `stack_tracy` gems installed.
 
-Open the Sinatra application in your browser at [http://localhost:4567](http://localhost:4567) and open [http://localhost:4567/tracy](http://localhost:4567/tracy) afterwards and you're done! ^^
+Open the Sinatra application in your browser at [http://localhost:4567](http://localhost:4567) and open [http://localhost:4567/tracy](http://localhost:4567/tracy) afterwards and the complete stack tree will be displayed in your browser! ^^
 
 ### Taking more control
 
-I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does not return either `false` or `nil`:
+I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does **note** return either `false` or `nil`:
 
     use StackTracy::Sinatra do |path, params|
       path == "/" #=> only trace "http://localhost:4567"
     end
 
-Also, you can determine what StackTracy has to do after the request has finished. It resembled the invocation of `stack_tracy`. The following will dump every request into the current directory:
+Also, you can determine what StackTracy has to do after the request has finished. It resembles the invocation of `stack_tracy`. The following will dump every request into the current directory:
 
     use StackTracy::Sinatra, "."
 
@@ -343,7 +343,6 @@ You can also run a single test:
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
 * Improve stack tree reduction by checking on method level
 * Correct `StackTracy::PRESETS` regarding `:active_record` and `:data_mapper`
-* Improve path determination within `StackTracy.dump`
 * Easily hook into Rails requests?
 
 ## Contact me

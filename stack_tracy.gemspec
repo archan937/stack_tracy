@@ -3,8 +3,8 @@
 Gem::Specification.new do |gem|
   gem.authors       = ["Paul Engel"]
   gem.email         = ["paul.engel@holder.nl"]
-  gem.summary       = %q{Investigate and detect slow methods within your stack trace}
-  gem.description   = %q{Investigate and detect slow methods within your stack trace}
+  gem.summary       = %q{Investigate and detect slow methods within the stack trace of your Ruby (optionally Sinatra) application}
+  gem.description   = %q{Investigate and detect slow methods within the stack trace of your Ruby (optionally Sinatra) application}
   gem.homepage      = "https://github.com/archan937/stack_tracy"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
