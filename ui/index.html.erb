@@ -48,7 +48,7 @@
             <%
                skip = excluded_objects.include?(event[:object]) || "#{event[:object]}".match(/^#/)
                cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
-               cumulatives[event[:call]][:duration] += event[:duration]
+               cumulatives[event[:call]][:duration] += event[:duration].to_f
                cumulatives[event[:call]][:count] += 1
                cumulatives[event[:call]][:average] = cumulatives[event[:call]][:duration].to_f / cumulatives[event[:call]][:count].to_f
                corrections.size.times do |i|
@@ -68,7 +68,7 @@
                   <%= "%.6f" % event[:time] %>
                 </span>
                 <span class="duration">
-                  <%= "%.6f" % event[:duration] %>
+                  <%= event[:duration] ? ("%.6f" % event[:duration]) : "?" %>
                 </span>
                 <span class="call">
                   <%= "&nbsp;&nbsp;&nbsp;" * (event[:depth] - corrections.size) %>
