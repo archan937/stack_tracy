@@ -1,5 +1,5 @@
 = StackTracy CHANGELOG
 
-== Version 0.1.0 (August xx, 2012)
+== Version 0.1.0 (August 16, 2012)
 
 * Initial release

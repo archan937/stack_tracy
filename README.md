@@ -1,5 +1,3 @@
-**Note: This gem is not available on [http://rubygems.org](http://rubygems.org) yet**
-
 # StackTracy
 
 Investigate and detect slow methods within the stack trace of your Ruby (optionally Sinatra) application
