@@ -1,5 +1,3 @@
-require "securerandom"
-
 module Kernel
 
   def stack_tracy(arg = nil, options = {})
@@ -13,11 +11,10 @@ module Kernel
     if arg == :print
       StackTracy.print
     elsif arg == :dump
-      StackTracy.dump "stack_events.csv"
+      StackTracy.dump
     elsif arg == :open
-      tmp_file = "#{Dir::tmpdir}/stack_events-#{SecureRandom.hex(3)}.csv"
-      StackTracy.dump tmp_file
-      StackTracy.open tmp_file
+      file = StackTracy.dump Dir::tmpdir
+      StackTracy.open file
     elsif arg.is_a? String
       StackTracy.dump arg
     end

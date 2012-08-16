@@ -78,6 +78,16 @@ A couple of examples:
 * `:exclude => ["Foo*", "FooBar"]` records everything except for `Foo`, `Foo::Bar`, `Foo::CandyBar` and `FooBar`
 * `:only => "Foo* Kernel"` records `Foo`, `Foo::Bar`, `Foo::CandyBar` and `Kernel`
 
+### Configure StackTracy
+
+You can configure the default stack tree reduction behaviour and dump directory of `StackTracy`:
+
+    StackTracy.configure do |c|
+      c.dump_dir = "."                        #=> default: Dir::tmpdir
+      c.only     = "Foo*"                     #=> default: nil
+      c.exclude  = %w(Foo::Bar Foo::CandyBar) #=> default: nil
+    end
+
 ### Using recorded stack events
 
 Once you have recorded stack events, you can call the following methods:
@@ -201,7 +211,7 @@ Its equivalent:
 
 #### Passing `:dump`
 
-Record stack events executed within a block and write the obtained data to `./stack_events.csv`:
+Record stack events executed within a block and write the obtained data to `./stack_events-<random generated postfix>.csv`:
 
     [1] pry(main)> stack_tracy :dump do
     [1] pry(main)>   puts "testing"
@@ -212,7 +222,22 @@ Its equivalent:
     [1] pry(main)> StackTracy.start
     [2] pry(main)> puts "testing"
     [3] pry(main)> StackTracy.stop
-    [4] pry(main)> StackTracy.dump "stack_events.csv"
+    [4] pry(main)> StackTracy.dump
+
+#### Passing a target directory
+
+Record stack events executed within a block and write the obtained data to `<passed directory>/stack_events-<random generated postfix>.csv`:
+
+    [1] pry(main)> stack_tracy Dir::tmpdir do
+    [1] pry(main)>   puts "testing"
+    [1] pry(main)> end
+
+Its equivalent:
+
+    [1] pry(main)> StackTracy.start
+    [2] pry(main)> puts "testing"
+    [3] pry(main)> StackTracy.stop
+    [4] pry(main)> StackTracy.dump Dir::tmpdir
 
 #### Passing a CSV file path
 
@@ -242,9 +267,47 @@ Its equivalent:
     [1] pry(main)> StackTracy.start
     [2] pry(main)> puts "testing"
     [3] pry(main)> StackTracy.stop
-    [4] pry(main)> tmp_file = "#{Dir::tmpdir}/stack_events-#{SecureRandom.hex(5)}.csv"
-    [5] pry(main)> StackTracy.dump tmp_file
-    [6] pry(main)> StackTracy.open tmp_file
+    [4] pry(main)> file = StackTracy.dump Dir::tmpdir
+    [5] pry(main)> StackTracy.open file
+
+## Hooking into Sinatra requests
+
+You can easily hook `StackTracy` into [Sinatra](http://www.sinatrarb.com) requests. This is a complete working example:
+
+    require "sinatra"
+    require "stack_tracy"
+
+    use StackTracy::Sinatra
+
+    get "/" do
+      "Hello world!"
+    end
+
+**Note**: Make sure you have the `sinatra` and `stack_tracy` gems installed.
+
+Open the Sinatra application in your browser at [http://localhost:4567](http://localhost:4567) and open [http://localhost:4567/tracy](http://localhost:4567/tracy) afterwards and you're done! ^^
+
+### Taking more control
+
+I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does not return either `false` or `nil`:
+
+    use StackTracy::Sinatra do |path, params|
+      path == "/" #=> only trace "http://localhost:4567"
+    end
+
+Also, you can determine what StackTracy has to do after the request has finished. It resembled the invocation of `stack_tracy`. The following will dump every request into the current directory:
+
+    use StackTracy::Sinatra, "."
+
+This will immediately open the stack tree in your default browser after every traced request:
+
+    use StackTracy::Sinatra, :open do
+      path == "/paul/engel" #=> only trace and open stack tree when opening "http://localhost:4567/paul/engel"
+    end
+
+Reduce the stack tree and open it immediately:
+
+    use StackTracy::Sinatra, :open, :only => "Foo*"
 
 ## Using the console
 

@@ -1,5 +1,7 @@
 require "erb"
 require "csv"
+require "tmpdir"
+require "securerandom"
 require "rich/support/core/string/colorize"
 require "launchy"
 
@@ -65,27 +67,42 @@ module StackTracy
     }
   end
 
-  def dump(path, *only)
-    keys = [:event, :file, :line, :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
-    File.open(File.expand_path(path), "w") do |file|
-      file << keys.join(";") + "\n"
-      select(only).each do |event|
-        file << event.values_at(*keys).join(";") + "\n"
+  def dump(path = nil, *only)
+    unless path && path.match(/\.csv$/)
+      path = File.join [path || @options.dump_dir, "stack_events-#{SecureRandom.hex(3)}.csv"].compact
+    end
+    File.expand_path(path).tap do |path|
+      keys = [:event, :file, :line, :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
+      File.open(path, "w") do |file|
+        file << keys.join(";") + "\n"
+        select(only).each do |event|
+          file << event.values_at(*keys).join(";") + "\n"
+        end
       end
     end
-    true
   end
 
   def open(path = nil)
-    index = ui("index.html")
-    if File.exists?(file = File.expand_path(path || "."))
-      file = (File.extname(file) == ".csv") ? file : File.join(file, "stack_events.csv")
+    unless path && path.match(/\.csv$/)
+      path = Dir[File.join(path || @options.dump_dir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+      path ||= Dir[File.join(path || Dir::tmpdir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
     end
+
+    if path
+      index = ui("index.html")
+      file = File.expand_path(path)
+    else
+      raise Error, "Could not locate StackTracy file"
+    end
+
     if File.exists?(file)
       events = StackTracy::EventInfo.to_hashes File.read(file)
       erb = ERB.new File.new(ui("index.html.erb")).read
       File.open(index, "w"){|f| f.write erb.result(binding)}
+    elsif path && path.match(/\.csv$/)
+      raise Error, "Could not locate StackTracy file at #{file}"
     end
+
     if File.exists?(index)
       Launchy.open("file://#{index}")
       nil
@@ -97,7 +114,7 @@ module StackTracy
 private
 
   def merge_options(hash = {})
-    Hash[@options.each_pair.to_a].merge(hash.inject({}){|h, (k, v)| h.merge!(k.to_sym => v)})
+    {:only => @options.only, :exclude => @options.exclude}.merge(hash.inject({}){|h, (k, v)| h.merge!(k.to_sym => v)})
   end
 
   def mod_names(arg)

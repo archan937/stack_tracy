@@ -9,20 +9,27 @@ module StackTracy
     end
 
     def call(env)
-      trace = @before_filter.nil? || begin
-        puts
-        puts env.inspect
-        puts
-        request = ::Sinatra::Request.new(env)
-        @before_filter.call request.url, request.params
+      request = ::Sinatra::Request.new env
+      if request.path.match /^\/tracy-?(.*)?/
+        return open($1)
       end
-      if trace
-        stack_tracy @arg, @options do
-          @app.call(env)
+
+      if @before_filter.nil? || !!@before_filter.call(request.path, request.params)
+        result = nil
+        stack_tracy @arg || Dir::tmpdir, @options do
+          result = @app.call(env)
         end
+        result
       else
         @app.call(env)
       end
+    end
+
+  private
+
+    def open(match)
+      StackTracy.open match.to_s.empty? ? nil : match
+      [200, {"Content-Type" => "text/html;charset=utf-8", "Content-Length" => Rack::Utils.bytesize("").to_s}, ""]
     end
 
   end
