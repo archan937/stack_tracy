@@ -140,12 +140,13 @@ You can dump (optionally filtered) recorded stack events to a CSV file.
     [2] pry(main)> puts "testing"
     => testing
     [3] pry(main)> StackTracy.stop
+    [4] pry(main)> StackTracy.print
     Kernel#puts <0.000121>
        IO#puts <0.000091>
           IO#write <0.000032>
           IO#write <0.000020>
     => nil
-    [4] pry(main)> StackTracy.dump "result.csv"
+    [5] pry(main)> StackTracy.dump "result.csv"
     => true
 
 #### CSV sample file
@@ -287,7 +288,7 @@ Open the Sinatra application in your browser at [http://localhost:4567](http://l
 
 ### Taking more control
 
-I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does **note** return either `false` or `nil`:
+I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does **not** return either `false` or `nil`:
 
     use StackTracy::Sinatra do |path, params|
       path == "/" #=> only trace "http://localhost:4567"
