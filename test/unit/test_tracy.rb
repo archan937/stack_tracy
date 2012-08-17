@@ -57,16 +57,19 @@ module Unit
           puts "testing"
         end
         file, line = __FILE__, __LINE__ - 2
+        st = File.expand_path("../../../lib/stack_tracy.rb", __FILE__)
 
         assert_equal [
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"},
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    },
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    },
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"}
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO        , :method => "puts" , :call => "IO#puts"         },
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO        , :method => "write", :call => "IO#write"        },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO        , :method => "write", :call => "IO#write"        },
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO        , :method => "write", :call => "IO#write"        },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO        , :method => "write", :call => "IO#write"        },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => IO        , :method => "puts" , :call => "IO#puts"         },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
+          {:event => "call"    , :file => st  , :line => 35  , :singleton => false, :object => StackTracy, :method => "stop" , :call => "StackTracy#stop" },
+          {:event => "c-call"  , :file => st  , :line => 36  , :singleton => 0    , :object => StackTracy, :method => "_stop", :call => "StackTracy._stop"}
         ], StackTracy.stack_trace.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -75,10 +78,7 @@ module Unit
         }
 
         assert StackTracy.stack_trace.first.call?
-        assert !StackTracy.stack_trace.last.call?
-
         assert !StackTracy.stack_trace.first.return?
-        assert StackTracy.stack_trace.last.return?
 
         StackTracy.config do |c|
           c.exclude = ["IO"]
@@ -89,8 +89,10 @@ module Unit
         file, line = __FILE__, __LINE__ - 2
 
         assert_equal [
-          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"},
-          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts"}
+          {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
+          {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
+          {:event => "call"    , :file => st  , :line => 35  , :singleton => false, :object => StackTracy, :method => "stop" , :call => "StackTracy#stop" },
+          {:event => "c-call"  , :file => st  , :line => 36  , :singleton => 0    , :object => StackTracy, :method => "_stop", :call => "StackTracy._stop"}
         ], StackTracy.stack_trace.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
@@ -105,7 +107,7 @@ module Unit
           puts "testing"
         end
 
-        assert_equal true, StackTracy.stack_trace.empty?
+        assert_equal 2, StackTracy.stack_trace.size
       end
 
       it "should return a printable version of the stack trace" do

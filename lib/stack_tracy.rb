@@ -149,6 +149,7 @@ private
   end
 
   def process?(event_info, only)
+    return false if "#{event_info.object}" == "StackTracy"
     return true if only.empty?
     only.any?{|x| event_info.matches?(x)}
   end
