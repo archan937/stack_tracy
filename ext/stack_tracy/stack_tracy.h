@@ -4,7 +4,6 @@
 #include <ruby.h>
 #include <stdbool.h>
 #include <time.h>
-#include <sys/time.h>
 #include <string.h>
 
 typedef struct event_info_t {
