@@ -1,5 +1,11 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.3 (August 19, 2012)
+
+* Being able to compile StackTracy native extension on Windows (thanks ramsees for issuing)
+* Tackled C compile warnings
+* Not using Launchy for opening the generated HTML page when running on Windows
+
 == Version 0.1.2 (August 16, 2012)
 
 * Tackling non-calculated durations within ui/index.html.erb

@@ -16,7 +16,7 @@ StackTracy = (function() {
   });
 
   return {
-    version: "0.1.2",
+    version: "0.1.3",
     sort: function(column) {
       sortation[column] = sortation[column] == "asc" ? "desc" : "asc";
       $("#cumulatives>.body>div").tsort("span:eq(" + column + ")[abbr]", {
