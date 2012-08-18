@@ -134,7 +134,6 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
 }
 
 VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names) {
-  int i;
   char *token;
 
   token = strtok((char *) RSTRING_PTR(only_names), " ");
@@ -144,10 +143,8 @@ VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names) {
     only_size++;
     only = (RubyClass *) realloc (only, only_size * sizeof(RubyClass));
 
-    RubyClass klass;
-    klass.name = (char *) token;
-    klass.klass = (VALUE *) rb_path2class((char *) token);
-    only[only_size - 1] = klass;
+    only[only_size - 1].name = (char *) token;
+    only[only_size - 1].klass = (VALUE *) rb_path2class((char *) token);
 
     token = strtok(NULL, " ");
   }
@@ -159,10 +156,8 @@ VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names) {
     exclude_size++;
     exclude = (RubyClass *) realloc (exclude, exclude_size * sizeof(RubyClass));
 
-    RubyClass klass;
-    klass.name = (char *) token;
-    klass.klass = (VALUE *) rb_path2class((char *) token);
-    exclude[exclude_size - 1] = klass;
+    exclude[exclude_size - 1].name = (char *) token;
+    exclude[exclude_size - 1].klass = (VALUE *) rb_path2class((char *) token);
 
     token = strtok(NULL, " ");
   }
@@ -180,7 +175,6 @@ VALUE stack_tracy_start(VALUE self, VALUE only_names, VALUE exclude_names) {
 
 VALUE stack_tracy_stop(VALUE self) {
   VALUE events, event;
-  ID id;
   const char *method;
   int i;
 
