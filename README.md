@@ -10,7 +10,7 @@ The gem is partly written in C to reduce the application performance as minimal 
 
 ![Dick .. Stack Tracy](http://codehero.es/images/stack_tracy.jpg)
 
-Watch ["**Using StackTracy within a small Sinatra application**"](https://vimeo.com/archan937/stacktracy) to see StackTracy in action!
+Watch the ["**Using StackTracy within a small Sinatra application**"](https://vimeo.com/archan937/stacktracy) **screencast** to see StackTracy in action!
 
 ## Installation
 
