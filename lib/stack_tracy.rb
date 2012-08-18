@@ -106,7 +106,11 @@ module StackTracy
     end
 
     if File.exists?(index)
-      Launchy.open("file://#{index}")
+      if RbConfig::CONFIG["host_os"].match(/(mswin|mingw)/) # I know, don't say it!
+        `start file://#{index}`
+      else
+        Launchy.open("file://#{index}")
+      end
       nil
     else
       raise Error, "Could not locate StackTracy file"
