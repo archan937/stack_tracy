@@ -341,6 +341,8 @@ You can also run a single test:
 
 ## TODO
 
+* Add `threshold` option when opening stack traces
+* Add possibility to dump stack traces without source location information
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
 * Improve stack tree reduction by checking on method level
 * Correct `StackTracy::PRESETS` regarding `:active_record` and `:data_mapper`
@@ -354,6 +356,7 @@ For support, remarks and requests, please mail me at [paul.engel@holder.nl](mail
 
 * Two functions within the StackTracy C implementation are taken from [ruby-prof](https://github.com/rdp/ruby-prof).
 * The table sort within the Cumulatives tab is implemented with [TinySort](http://tinysort.sjeiti.com/).
+* Being able to improve browser performance when loading heavy HTML stack trace pages using Ravi Raj's ([@raviraj4u](https://twitter.com/raviraj4u)) blog post: [http://ravirajsblog.blogspot.nl/2010/12/another-hack-to-render-heavy-html-pages.html](http://ravirajsblog.blogspot.nl/2010/12/another-hack-to-render-heavy-html-pages.html)
 
 ## License
 
