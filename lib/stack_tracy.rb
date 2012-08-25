@@ -79,6 +79,8 @@ module StackTracy
           file << event.values_at(*keys).join(";") + "\n"
         end
       end
+      yield path if block_given?
+      stack_trace.clear
     end
   end
 

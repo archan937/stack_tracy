@@ -13,8 +13,9 @@ module Kernel
     elsif arg == :dump
       StackTracy.dump
     elsif arg == :open
-      file = StackTracy.dump
-      StackTracy.open file, true
+      StackTracy.dump do |file|
+        StackTracy.open file, true
+      end
     elsif arg.is_a? String
       StackTracy.dump arg
     end

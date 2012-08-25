@@ -77,8 +77,8 @@ module Unit
           end
         }
 
-        assert StackTracy.stack_trace.first.call?
-        assert !StackTracy.stack_trace.first.return?
+        assert_equal true, StackTracy.stack_trace.first.call?
+        assert_equal false, StackTracy.stack_trace.first.return?
 
         StackTracy.config do |c|
           c.exclude = ["IO"]
@@ -128,6 +128,30 @@ module Unit
             hash.delete(:time)
           end
         }
+      end
+
+      it "should clear StackTracy.stack_trace after having invoked StackTracy.dump" do
+        stack_tracy do
+          puts "testing"
+        end
+        assert_equal false, StackTracy.stack_trace.empty?
+
+        StackTracy.dump
+        assert_equal true, StackTracy.stack_trace.empty?
+
+        stack_tracy do
+          puts "testing"
+        end
+        assert_equal false, StackTracy.stack_trace.empty?
+
+        StackTracy.expects(:foo)
+        StackTracy.dump do |file|
+          assert file.match(/\/.*\.csv/)
+          assert_equal false, StackTracy.stack_trace.empty?
+          StackTracy.foo
+        end
+
+        assert_equal true, StackTracy.stack_trace.empty?
       end
 
       it "should filter methods as expected" do
