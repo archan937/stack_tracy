@@ -178,15 +178,31 @@ You can easily view the dumped stack events within your browser by either callin
 
     [1] pry(main)> StackTracy.open "some/dir/file.csv"
 
-or the following within the Terminal:
-
-    $ tracy "some/dir/file.csv"
-
 Your default browser will be launched in which the stack events will be displayed.
 
-When passing no path, `tracy` will look for `stack_events-<random generated postfix>.csv` in either the default dump directory or in `Dir::tmpdir` and display it in the browser. When not found, it will display the last compiled stack tree when available:
+When passing no path, StackTracy will look for `stack_events-<random generated postfix>.csv` in either the default dump directory, the current directory or `Dir::tmpdir` and display it in the browser. When not found, it will display the last compiled stack tree when available:
 
     $ tracy
+
+### Using the CLI (command line interface)
+
+Another way for viewing stack events in your browser is using the CLI `tracy` within the Terminal:
+
+    $ tracy             #=> let StackTracy auto-determine which file to display
+    $ tracy .           #=> display the last data file within the current directory
+    $ tracy foo/bar.csv #=> display foo/bar.csv
+
+To get info about its options, type `tracy help open`:
+
+    $ tracy help open
+    Usage:
+      tracy open [PATH]
+
+    Options:
+      -l, [--limit=LIMIT]
+      -t, [--threshold=THRESHOLD]
+
+    Display StackTracy data within the browser (PATH is optional)
 
 ### Kernel#stack_tracy
 

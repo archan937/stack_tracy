@@ -90,9 +90,9 @@ module StackTracy
       file = File.expand_path(path) if path
     else
       unless path && path.match(/\.csv$/)
-        path = Dir[File.join(path || @options.dump_dir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
-        path ||= Dir[File.join(path || Dir::tmpdir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+        path   = Dir[File.join(path || @options.dump_dir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
         path ||= Dir[File.join(".", "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
+        path ||= Dir[File.join(Dir::tmpdir, "stack_events-*.csv")].sort_by{|f| File.mtime(f)}.last
       end
       if path
         file = File.expand_path(path)

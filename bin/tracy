@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "stack_tracy"
+require "stack_tracy/cli"
 
 begin
-  StackTracy.open ARGV.first
+  StackTracy::CLI.start
 rescue StackTracy::Error => e
   puts e.message.red
 end
