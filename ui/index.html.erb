@@ -28,14 +28,16 @@
           </li>
         </ul>
         <div class="tab-content"><%
-          comment_depth = nil
-          last_depth = nil
-          last_duration = nil
-          excluded_objects = if events.size > 7500
+          limited = events.size > 7500
+          threshold = 0.001 if limited
+          excluded_objects = if limited
             %w(Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
           else
             []
           end
+          comment_depth = nil
+          last_depth = nil
+          last_duration = nil
           corrections = []
           cumulatives = {} %>
           <div class="tab-pane active" id="stack_trace">
@@ -58,15 +60,15 @@ if skip
 corrections.unshift event[:depth] if corrections.empty? || corrections.first != event[:depth]
 else
 if last_depth.to_i < event[:depth] - corrections.size %>
-<div class="group"><% if comment_depth.nil? && last_duration && last_duration < 0.001 %><% comment_depth = event[:depth] %><%= "\n<!--" %><% end %><% else
+<div class="group"><% if threshold && comment_depth.nil? && last_duration && last_duration < threshold %><% comment_depth = event[:depth] - corrections.size %><%= "\n<!--" %><% end %><% else
 close_tags = ((event[:depth] - corrections.size + 1)..last_depth.to_i).collect do |depth|
-  if depth == comment_depth
+  if comment_depth && depth == comment_depth
     comment_depth = nil
-    "-->\n</div>"
+    "\n-->\n</div>"
   else
-    "</div>"
+    "\n</div>"
   end
-end.reverse.join("\n")
+end.reverse.join("")
 %><%= close_tags %><% end %>
 <div>
 <span class="time"><%= "%.6f" % event[:time] %></span>
@@ -78,13 +80,13 @@ last_duration = event[:duration]
 end
 end
 close_tags = (1..last_depth.to_i).collect do |depth|
-  if depth == comment_depth
+  if comment_depth && depth == comment_depth
     comment_depth = nil
-    "-->\n</div>"
+    "\n-->\n</div>"
   else
-    "</div>"
+    "\n</div>"
   end
-end.reverse.join("\n")
+end.reverse.join("")
 %><%= close_tags %>
             </div>
           </div>

@@ -56,16 +56,17 @@ a {
 #page .tab-pane {
   line-height: 28px; }
 
-#page .tab-pane div {
-  border-bottom: 1px solid #EFEFEF; }
-
 #page .tab-pane div.head {
   padding-bottom: 4px;
   font-weight: bold; }
   #page .tab-pane div.head a {
     color: #222; }
 
-#page .tab-pane div.group {
+#page .tab-pane div.head,
+#page .tab-pane div.body div {
+  border-bottom: 1px solid #EFEFEF; }
+
+#page .tab-pane div.body div.group {
   border: 0; }
 
 #page .tab-pane div span.time,
