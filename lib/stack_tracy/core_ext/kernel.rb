@@ -13,7 +13,7 @@ module Kernel
     elsif arg == :dump
       StackTracy.dump
     elsif arg == :open
-      file = StackTracy.dump Dir::tmpdir
+      file = StackTracy.dump
       StackTracy.open file, true
     elsif arg.is_a? String
       StackTracy.dump arg
