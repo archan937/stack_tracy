@@ -4,7 +4,13 @@ StackTracy = (function() {
   var sortation = [];
 
   var toggle = function(event) {
-    $(event.target).closest("div").next("div.group").toggle();
+    var group = $(event.target).closest("div").next("div.group");
+    var comments = group.comments();
+    if (comments.length) {
+      group.html(comments.join("\n"));
+    } else {
+      group.toggle();
+    }
   };
 
   $(function() {

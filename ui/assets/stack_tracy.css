@@ -72,8 +72,8 @@ a {
 #page .tab-pane div span.average,
 #page .tab-pane div span.duration,
 #page .tab-pane div span.count {
-  width: 100px;
-  padding-right: 15px;
+  width: 70px;
+  padding-right: 20px;
   text-align: right;
   display: -moz-inline-block;
   display: inline-block;
@@ -82,17 +82,13 @@ a {
 
 #page .tab-pane div span.call {
   width: 950px;
-  padding-left: 15px;
   display: -moz-inline-block;
   display: inline-block;
   *display: inline;
   zoom: 1; }
 
 #page #cumulatives div span.count {
-  width: 65px; }
-
-#page #cumulatives div span.call {
-  width: 790px; }
+  width: 45px; }
 
 #footer {
   padding-top: 45px;
