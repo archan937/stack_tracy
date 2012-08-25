@@ -80,12 +80,15 @@ A couple of examples:
 
 ### Configure StackTracy
 
-You can configure the default stack tree reduction behaviour and dump directory of `StackTracy`:
+You can configure `StackTracy` regarding the default stack tree reduction behaviour, its dump directory and whether to include the source location when dumping recorded stack events:
 
     StackTracy.configure do |c|
-      c.dump_dir = "."                        #=> default: Dir::tmpdir
-      c.only     = "Foo*"                     #=> default: nil
-      c.exclude  = %w(Foo::Bar Foo::CandyBar) #=> default: nil
+      c.dump_dir             = "."                        #=> default: Dir::tmpdir
+      c.dump_source_location = "."                        #=> default: false
+      c.limit                = 1000                       #=> default: 7500
+      c.threshold            = 0.005                      #=> default: 0.001
+      c.only                 = "Foo*"                     #=> default: nil
+      c.exclude              = %w(Foo::Bar Foo::CandyBar) #=> default: nil
     end
 
 ### Using recorded stack events
@@ -154,6 +157,14 @@ You can dump (optionally filtered) recorded stack events to a CSV file.
 #### CSV sample file
 
 This is what the contents of `result.csv` would look like:
+
+    event;;;singleton;object;method;nsec;call;depth;duration
+    c-call;;;false;Kernel;puts;1344466943040581120;Kernel#puts;0;0.000120832
+    c-call;;;false;IO;puts;1344466943040599040;IO#puts;1;9.1904e-05
+    c-call;;;false;IO;write;1344466943040613120;IO#write;2;3.2768e-05
+    c-call;;;false;IO;write;1344466943040658944;IO#write;2;1.9968e-05
+
+When invoking `StackTracy.dump "result.csv", true` and thus including the source location:
 
     event;file;line;singleton;object;method;nsec;call;depth;duration
     c-call;(pry);2;false;Kernel;puts;1344466943040581120;Kernel#puts;0;0.000120832
@@ -268,8 +279,9 @@ Its equivalent:
     [1] pry(main)> StackTracy.start
     [2] pry(main)> puts "testing"
     [3] pry(main)> StackTracy.stop
-    [4] pry(main)> file = StackTracy.dump Dir::tmpdir
-    [5] pry(main)> StackTracy.open file
+    [4] pry(main)> StackTracy.dump do |file|
+    [4] pry(main)>   StackTracy.open file, true
+    [4] pry(main)> end
 
 ## Hooking into Sinatra requests
 
@@ -278,7 +290,7 @@ You can easily hook `StackTracy` into [Sinatra](http://www.sinatrarb.com) reques
     require "sinatra"
     require "stack_tracy"
 
-    use StackTracy::Sinatra
+    use StackTracy::Sinatra, :open
 
     get "/" do
       "Hello world!"
@@ -286,7 +298,9 @@ You can easily hook `StackTracy` into [Sinatra](http://www.sinatrarb.com) reques
 
 **Note**: Make sure you have the `sinatra` and `stack_tracy` gems installed.
 
-Open the Sinatra application in your browser at [http://localhost:4567](http://localhost:4567) and open [http://localhost:4567/tracy](http://localhost:4567/tracy) afterwards and the complete stack tree will be displayed in your browser! ^^
+Open the Sinatra application in your browser at [http://localhost:4567](http://localhost:4567) and the complete stack tree will be displayed in your browser! ^^
+
+You can also open [http://localhost:4567/tracy](http://localhost:4567/tracy) afterwards by the way.
 
 ### Taking more control
 
@@ -341,8 +355,6 @@ You can also run a single test:
 
 ## TODO
 
-* Add `threshold` option when opening stack traces
-* Add possibility to dump stack traces without source location information
 * Optimize C implementation performance when converting C data to Ruby objects within `stack_tracy_stop`
 * Improve stack tree reduction by checking on method level
 * Correct `StackTracy::PRESETS` regarding `:active_record` and `:data_mapper`

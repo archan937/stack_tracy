@@ -67,12 +67,13 @@ module StackTracy
     }
   end
 
-  def dump(path = nil, *only)
+  def dump(path = nil, dump_source_location = nil, *only)
     unless path && path.match(/\.csv$/)
       path = File.join [path || @options.dump_dir, "stack_events-#{SecureRandom.hex(3)}.csv"].compact
     end
     File.expand_path(path).tap do |path|
-      keys = [:event, :file, :line, :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
+      bool = dump_source_location.nil? ? @options[:dump_source_location] : dump_source_location
+      keys = [:event, (:file if bool), (:line if bool), :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
       File.open(path, "w") do |file|
         file << keys.join(";") + "\n"
         select(only).each do |event|
@@ -84,7 +85,7 @@ module StackTracy
     end
   end
 
-  def open(path = nil, use_current_stack_trace = false)
+  def open(path = nil, use_current_stack_trace = false, threshold = nil, limit = nil)
     if use_current_stack_trace
       file = File.expand_path(path) if path
     else
@@ -103,6 +104,8 @@ module StackTracy
     index = ui("index.html")
 
     if use_current_stack_trace || (file && File.exists?(file))
+      threshold = threshold.nil? ? @options[:threshold] : threshold
+      limit = limit.nil? ? @options[:limit] : limit
       events = use_current_stack_trace ? select : StackTracy::EventInfo.to_hashes(File.read(file))
       erb = ERB.new File.new(ui("index.html.erb")).read
       File.open(index, "w"){|f| f.write erb.result(binding)}

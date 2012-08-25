@@ -29,14 +29,14 @@ module StackTracy
     def open(match)
       if match.empty?
         if StackTracy.stack_trace.empty?
-          StackTracy.open
+          StackTracy.open nil, false, @options[:threshold], @options[:limit]
         else
           StackTracy.dump do |file|
-            StackTracy.open file, true
+            StackTracy.open file, true, @options[:threshold], @options[:limit]
           end
         end
       else
-        StackTracy.open match
+        StackTracy.open match, false, @options[:threshold], @options[:limit]
       end
       [200, {"Content-Type" => "text/html;charset=utf-8", "Content-Length" => Rack::Utils.bytesize("").to_s}, ""]
     end

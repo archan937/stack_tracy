@@ -28,10 +28,10 @@
           </li>
         </ul>
         <div class="tab-content"><%
-          limited = events.size > 7500
-          threshold = 0.001 if limited
+          limited = events.size > limit
+          threshold = nil unless limited
           excluded_objects = if limited
-            %w(Array BasicObject Enumerable Fixnum Float Hash IO Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
+            %w(Array BasicObject Enumerable Fixnum Float Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
           else
             []
           end
