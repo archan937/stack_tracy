@@ -18,7 +18,7 @@ module StackTracy
     :active_record => "ActiveRecord::Base",
     :data_mapper => "DataMapper::Resource"
   }
-  @options = Struct.new(:dump_dir, :only, :exclude).new(Dir::tmpdir)
+  @options = Struct.new(:dump_dir, :dump_source_location, :limit, :threshold, :only, :exclude).new(Dir::tmpdir, false, 7500, 0.001)
 
   class Error < StandardError; end
 

@@ -25,7 +25,7 @@ module Unit
       it "should be configurable" do
         StackTracy.config do |c|
           assert_equal true, c.is_a?(Struct)
-          assert_equal [:dump_dir, :only, :exclude], c.members
+          assert_equal [:dump_dir, :dump_source_location, :limit, :threshold, :only, :exclude], c.members
           c.only = "Kernel"
           c.exclude = ["IO", "String"]
         end
