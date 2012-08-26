@@ -35,16 +35,16 @@ Using `StackTracy` is pretty straightforward. You can either `start` and `stop` 
 Or you can use the `stack_tracy` convenience method which records stack events within the passed block.
 
     [1] pry(main)> stack_tracy do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 ### Reducing recorded stack events
 
-As StackTracy records every `call` and `return` event, the resulted stack tree can get immense huge. Fortunately, you can reduce the recorded stack events by passing options to `StackTracy.start` or `stack_tracy`.
+As StackTracy records every `call` and `return` event, the resulted stack tree can get immense huge. Especially when dealing with complicated or extensive applications. If this is the case, I **really** recommend using following options which instructs StackTracy to reduce the recorded stack events.
 
-They accept an options `Hash` with at least one of the following keys:
+It accepts an options `Hash` with at least one of the following keys:
 
-* `:only` - Matching events will be recorded
+* `:only` - Only matching events will be recorded
 * `:exclude` - Matching events will be ignored
 
 The value can be either a String (optionally whitespace-delimited) or an array of strings containing `class` and/or `module` names. You can use the wildcard (`*`) for matching classes and/or modules within that namespace.
@@ -54,12 +54,13 @@ The value can be either a String (optionally whitespace-delimited) or an array o
 You can pass options as follows:
 
     [1] pry(main)> StackTracy.start :only => ["Foo"]
+    [2] pry(main)> StackTracy.start :exclude => [:core]
 
 When using the convenience method:
 
-    [2] pry(main)> stack_tracy(:only => "Foo") { puts "testing" }
-    [3] pry(main)> stack_tracy(:dump, {:only => "Foo*"}) { puts "testing" }
-    [4] pry(main)> stack_tracy(:open, {:exclude => ["Array", "Hash"]}) { puts "testing" }
+    [3] pry(main)> stack_tracy(:only => "Foo") { puts "testing" }
+    [4] pry(main)> stack_tracy(:dump, {:only => "Foo*"}) { puts "testing" }
+    [5] pry(main)> stack_tracy(:open, {:exclude => ["Array", "Hash"]}) { puts "testing" }
 
 Let's say that you have the following code:
 
@@ -77,6 +78,7 @@ A couple of examples:
 * `:only => "Foo*", :exclude => "Foo::Bar"` records `Foo` and `Foo::CandyBar`
 * `:exclude => ["Foo*", "FooBar"]` records everything except for `Foo`, `Foo::Bar`, `Foo::CandyBar` and `FooBar`
 * `:only => "Foo* Kernel"` records `Foo`, `Foo::Bar`, `Foo::CandyBar` and `Kernel`
+* `:exclude => :core` records everything except for Ruby core classes and modules (see [stack_tracy.rb](https://github.com/archan937/stack_tracy/blob/master/lib/stack_tracy.rb#L16) for more details)
 
 ### Configure StackTracy
 
@@ -90,6 +92,12 @@ You can configure `StackTracy` regarding the default stack tree reduction behavi
       c.only                 = "Foo*"                     #=> default: nil
       c.exclude              = %w(Foo::Bar Foo::CandyBar) #=> default: nil
     end
+
+As already mentioned, recorded stack traces can easily get very huge. So StackTracy will use the `:limit` and `:threshold` options when generating the HTML stack trace page (after having invoked `StackTracy.open`).
+
+When the amount of calls within the stack trace exceeds the specified `:limit`, StackTracy will automatically filter out Ruby core classes and modules calls and it will also apply the `:threshold` option.
+
+When applying the `:threshold`, calls with a duration **below** the `:threshold` will be folded at default within the stack tree which saves **a lot** of heavy browser rendering on page load as the 'child calls' will be rendered as comment. See [this commit](https://github.com/archan937/stack_tracy/commit/0bb49669015b44cd24715988bf9f7e4cf03a5dad) for more information.
 
 ### Using recorded stack events
 
@@ -182,7 +190,7 @@ Your default browser will be launched in which the stack events will be displaye
 
 When passing no path, StackTracy will look for `stack_events-<random generated postfix>.csv` in either the default dump directory, the current directory or `Dir::tmpdir` and display it in the browser. When not found, it will display the last compiled stack tree when available:
 
-    $ tracy
+    [2] pry(main)> StackTracy.open
 
 ### Using the CLI (command line interface)
 
@@ -213,8 +221,8 @@ As already mentioned, there is a convenience method called `stack_tracy` conveni
 Record stack events executed within a block:
 
     [1] pry(main)> stack_tracy do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -227,8 +235,8 @@ Its equivalent:
 Record stack events executed within a block and print the stack tree:
 
     [1] pry(main)> stack_tracy :print do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -242,8 +250,8 @@ Its equivalent:
 Record stack events executed within a block and write the obtained data to `<default dump directory>/stack_events-<random generated postfix>.csv`:
 
     [1] pry(main)> stack_tracy :dump do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -257,8 +265,8 @@ Its equivalent:
 Record stack events executed within a block and write the obtained data to `<passed directory>/stack_events-<random generated postfix>.csv`:
 
     [1] pry(main)> stack_tracy Dir::tmpdir do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -272,8 +280,8 @@ Its equivalent:
 Record stack events executed within a block and write the obtained data to the passed file path:
 
     [1] pry(main)> stack_tracy "some/file.csv" do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -287,8 +295,8 @@ Its equivalent:
 Record stack events executed within a block and open the stack tree in your browser:
 
     [1] pry(main)> stack_tracy :open do
-    [1] pry(main)>   puts "testing"
-    [1] pry(main)> end
+    [1] pry(main)*   puts "testing"
+    [1] pry(main)* end
 
 Its equivalent:
 
@@ -296,8 +304,8 @@ Its equivalent:
     [2] pry(main)> puts "testing"
     [3] pry(main)> StackTracy.stop
     [4] pry(main)> StackTracy.dump do |file|
-    [4] pry(main)>   StackTracy.open file, true
-    [4] pry(main)> end
+    [4] pry(main)*   StackTracy.open file, true
+    [4] pry(main)* end
 
 ## Hooking into Sinatra requests
 
@@ -320,7 +328,7 @@ You can also open [http://localhost:4567/tracy](http://localhost:4567/tracy) aft
 
 ### Taking more control
 
-I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will traced when it does **not** return either `false` or `nil`:
+I can imagine that you don't want to hook into every Sinatra request. So you can pass a block which will be yielded before every request. The request will only be traced when the block does **not** return either `false` or `nil`:
 
     use StackTracy::Sinatra do |path, params|
       path == "/" #=> only trace "http://localhost:4567"
@@ -347,7 +355,7 @@ The StackTracy repo is provided with `script/console` which you can use for deve
 Run the following command in your console:
 
     $ script/console
-    Loading development environment (StackTracy 0.1.0)
+    Loading development environment (StackTracy 0.1.4)
     [1] pry(main)> stack_tracy :print do
     [1] pry(main)*   puts "testing"
     [1] pry(main)* end
@@ -365,7 +373,7 @@ Run the following command for testing:
 
     $ rake
 
-You can also run a single test:
+You can also run a single test file:
 
     $ ruby test/unit/test_tracy.rb
 
