@@ -3,20 +3,20 @@
 == Version 0.1.4 (August 25, 2012)
 
 * Added major improvements regarding browser performance when opening heavy HTML stack trace pages:
-- using padding instead of non-breakable spaces (doh!)
-- reduced white lines and white space
-- added a threshold (< 0.001s) for folding calls at default and rendering its 'child calls' as comment (see http://ravirajsblog.blogspot.nl/2010/12/another-hack-to-render-heavy-html-pages.html)
-- parsing commented 'child calls' at initial unfold
-* Falling back to current directory when invoking StackTracy.open (or `tracy` within the Terminal)
-* Letting StackTracy auto-determine its dump directory when calling `stack_tracy(:open) {}`
+  * using padding instead of non-breakable spaces (doh!)
+  * reduced white lines and white space
+  * added a threshold (< 0.001s) for folding calls at default and rendering its 'child calls' as comment (see http://ravirajsblog.blogspot.nl/2010/12/another-hack-to-render-heavy-html-pages.html)
+  * parsing commented 'child calls' at initial unfold
+* Falling back to current directory when invoking StackTracy.open (or +tracy+ within the Terminal)
+* Letting StackTracy auto-determine its dump directory when calling +StacyTracy.open+
 * Clearing StackTracy.stack_trace after having invoked StackTracy.dump
 * Displaying passed path when invoking StackTracy.open with use_current_stack_trace == true
-* Improved StackTracy::Sinatra middleware a bit regarding the `/tracy` route
+* Improved StackTracy::Sinatra middleware a bit regarding the +/tracy+ route
 * Added three configuration options:
-- dump_source_location (default: `false`) include the source location when dumping recorded stack trace
-- limit (default: `7500`) stack traces with more calls than the limit will be limited (core class / module calls will be excluded) when displaying
-- threshold (default: `0.001`) fold calls faster than the threshold when exceeding the calls limit
-* Enhanced the CLI interface `tracy` by using Thor in order to process the :limit and :threshold option
+  * dump_source_location (default: +false+) include the source location when dumping recorded stack trace
+  * limit (default: +7500+) stack traces with more calls than the limit will be limited (core class / module calls will be excluded) when displaying
+  * threshold (default: +0.001+) fold calls faster than the threshold when exceeding the calls limit
+* Enhanced the CLI interface +tracy+ by using Thor in order to process the :limit and :threshold option
 
 == Version 0.1.3 (August 19, 2012)
 
