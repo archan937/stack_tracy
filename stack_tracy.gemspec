@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "stack_tracy"
   gem.require_paths = ["lib"]
-  gem.version       = "0.1.4"
+  gem.version       = "0.1.5"
 
   gem.add_dependency "rich_support", "~> 0.1.2"
   gem.add_dependency "launchy", "2.1.0"

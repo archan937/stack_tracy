@@ -1,5 +1,13 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.5 (August 28, 2012)
+
+* Being able to add trace messages for recognition of executed code (use +String.tracy+)
+* Using CSV.open instead of File.open to write CSV files
+* Added +:messages_only+ and +:slows_only+ options to +StackTracy.open+ and the CLI (command line interface):
+  * the stack tree will only include trace messages when having set +:messages_only+ to +true+
+  * the stack tree will only include slows calls (duration > threshold) and trace messages when having set +:slows_only+ to +true+
+
 == Version 0.1.4 (August 25, 2012)
 
 * Added major improvements regarding browser performance when opening heavy HTML stack trace pages:
