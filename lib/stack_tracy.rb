@@ -18,7 +18,7 @@ module StackTracy
     :active_record => "ActiveRecord::Base",
     :data_mapper => "DataMapper::Resource"
   }
-  @options = Struct.new(:dump_dir, :dump_source_location, :limit, :threshold, :only, :exclude).new(Dir::tmpdir, false, 7500, 0.001)
+  @options = Struct.new(:dump_dir, :dump_source_location, :limit, :threshold, :messages_only, :slows_only, :only, :exclude).new(Dir::tmpdir, false, 7500, 0.001, false, false)
 
   class Error < StandardError; end
 
@@ -74,10 +74,10 @@ module StackTracy
     File.expand_path(path).tap do |path|
       bool = dump_source_location.nil? ? @options[:dump_source_location] : dump_source_location
       keys = [:event, (:file if bool), (:line if bool), :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
-      File.open(path, "w") do |file|
-        file << keys.join(";") + "\n"
+      CSV.open(path, "w", :col_sep => ";") do |file|
+        file << keys
         select(only).each do |event|
-          file << event.values_at(*keys).join(";") + "\n"
+          file << event.values_at(*keys)
         end
       end
       yield path if block_given?
@@ -85,7 +85,7 @@ module StackTracy
     end
   end
 
-  def open(path = nil, use_current_stack_trace = false, threshold = nil, limit = nil)
+  def open(path = nil, use_current_stack_trace = false, options = {})
     if use_current_stack_trace
       file = File.expand_path(path) if path
     else
@@ -104,8 +104,10 @@ module StackTracy
     index = ui("index.html")
 
     if use_current_stack_trace || (file && File.exists?(file))
-      threshold = threshold.nil? ? @options[:threshold] : threshold
-      limit = limit.nil? ? @options[:limit] : limit
+      threshold = options["threshold"] || options[:threshold] || @options[:threshold]
+      limit = options["limit"] || options[:limit] || @options[:limit]
+      messages_only = [options["messages_only"], options[:messages_only], @options[:messages_only]].detect{|x| !x.nil?}
+      slows_only = [options["slows_only"], options[:slows_only], @options[:slows_only]].detect{|x| !x.nil?}
       events = use_current_stack_trace ? select : StackTracy::EventInfo.to_hashes(File.read(file))
       erb = ERB.new File.new(ui("index.html.erb")).read
       File.open(index, "w"){|f| f.write erb.result(binding)}

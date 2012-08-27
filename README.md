@@ -80,6 +80,44 @@ A couple of examples:
 * `:only => "Foo* Kernel"` records `Foo`, `Foo::Bar`, `Foo::CandyBar` and `Kernel`
 * `:exclude => :core` records everything except for Ruby core classes and modules (see [stack_tracy.rb](https://github.com/archan937/stack_tracy/blob/master/lib/stack_tracy.rb#L16) for more details)
 
+### Add trace messages
+
+Sometimes you want to add marks to the stack tree in order to recognize certain events. You can do this by adding trace messages by using the `String#tracy` method:
+
+    [1] pry(main)> stack_tracy(:print) do
+    [1] pry(main)*   "Putting string".tracy
+    [1] pry(main)*   puts "Hello world!"
+    [1] pry(main)*   "Done putting string".tracy
+    [1] pry(main)* end
+    Hello world!
+    "Putting string" <0.000007>
+    Kernel#puts <0.000038>
+       IO#puts <0.000034>
+          IO#write <0.000017>
+          IO#write <0.000009>
+    "Done putting string" <0.000003>
+    => nil
+
+You can also encapsulate trace messages by executing code within a block:
+
+    [1] pry(main)> stack_tracy(:print) do
+    [1] pry(main)*   "Doing things".tracy do
+    [1] pry(main)*     "" * 10
+    [1] pry(main)*     "Putting string".tracy do
+    [1] pry(main)*       puts "Hello world!"
+    [1] pry(main)*     end
+    [1] pry(main)*   end
+    [1] pry(main)* end
+    Hello world!
+    "Doing things" <0.000057>
+       String#* <0.000003>
+       "Putting string" <0.000043>
+          Kernel#puts <0.000038>
+             IO#puts <0.000033>
+                IO#write <0.000017>
+                IO#write <0.000009>
+    => nil
+
 ### Configure StackTracy
 
 You can configure `StackTracy` regarding the default stack tree reduction behaviour, its dump directory and whether to include the source location when dumping recorded stack events:
@@ -89,6 +127,8 @@ You can configure `StackTracy` regarding the default stack tree reduction behavi
       c.dump_source_location = "."                        #=> default: false
       c.limit                = 1000                       #=> default: 7500
       c.threshold            = 0.005                      #=> default: 0.001
+      c.messages_only        = true                       #=> default: false
+      c.slows_only           = false                      #=> default: false
       c.only                 = "Foo*"                     #=> default: nil
       c.exclude              = %w(Foo::Bar Foo::CandyBar) #=> default: nil
     end
@@ -98,6 +138,8 @@ As already mentioned, recorded stack traces can easily get very huge. So StackTr
 When the amount of calls within the stack trace exceeds the specified `:limit`, StackTracy will automatically filter out Ruby core classes and modules calls and it will also apply the `:threshold` option.
 
 When applying the `:threshold`, calls with a duration **below** the `:threshold` will be folded at default within the stack tree which saves **a lot** of heavy browser rendering on page load as the 'child calls' will be rendered as comment. See [this commit](https://github.com/archan937/stack_tracy/commit/0bb49669015b44cd24715988bf9f7e4cf03a5dad) for more information.
+
+As of version v0.1.5, `StackTracy.open` (and thus the CLI) is provided with the options `:messages_only` and `:slows_only`. When having set `:messages_only` to `true`, the display stack tree will only include trace messages. If you have set `:slows_only` to `true`, then the stack tree will only include slow calls (duration > threshold) **and** trace messages.
 
 ### Using recorded stack events
 
@@ -207,8 +249,10 @@ To get info about its options, type `tracy help open`:
       tracy open [PATH]
 
     Options:
-      -l, [--limit=LIMIT]
-      -t, [--threshold=THRESHOLD]
+      -l, [--limit=N]
+      -t, [--threshold=N]
+      -m, [--messages-only=MESSAGES_ONLY]
+      -s, [--slows-only=SLOWS_ONLY]
 
     Display StackTracy data within the browser (PATH is optional)
 

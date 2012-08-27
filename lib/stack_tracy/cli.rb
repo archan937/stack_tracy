@@ -7,9 +7,9 @@ module StackTracy
     default_task :open
 
     desc "open [PATH]", "Display StackTracy data within the browser (PATH is optional)"
-    method_options [:limit, "-l"] => :numeric, [:threshold, "-t"] => :numeric
+    method_options [:limit, "-l"] => :numeric, [:threshold, "-t"] => :numeric, [:messages_only, "-m"] => :false, [:slows_only, "-s"] => :false
     def open(path = ".")
-      StackTracy.open path, false, options.threshold, options.limit
+      StackTracy.open path, false, options
     end
 
   private

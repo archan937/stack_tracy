@@ -29,7 +29,7 @@
         </ul>
         <div class="tab-content"><%
           limited = events.size > limit
-          threshold = nil unless limited
+          threshold = nil unless limited || slows_only
           excluded_objects = if limited
             %w(Array BasicObject Enumerable Fixnum Float Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time)
           else
@@ -48,17 +48,20 @@
             </div>
             <div class="body"><%
              events.each_with_index do |event, index|
-               skip = excluded_objects.include?(event[:object]) || "#{event[:object]}".match(/^#/)
-               cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
-               cumulatives[event[:call]][:duration] += event[:duration].to_f
-               cumulatives[event[:call]][:count] += 1
-               cumulatives[event[:call]][:average] = cumulatives[event[:call]][:duration].to_f / cumulatives[event[:call]][:count].to_f
-               corrections.size.times do |i|
-                 event[:depth] <= corrections[0] ? corrections.shift : break
+               skip = begin
+                 ((event[:call][0] != "\"") && (messages_only || (slows_only && threshold && event[:duration] < threshold))) ||
+                 (excluded_objects.include?(event[:object]) || "#{event[:object]}".match(/^#/))
                end
-if skip
-corrections.unshift event[:depth] if corrections.empty? || corrections.first != event[:depth]
-else
+               if skip
+                 corrections.unshift event[:depth] if corrections.empty? || corrections.first != event[:depth]
+               else
+                 cumulatives[event[:call]] ||= {:duration => 0.0, :count => 0}
+                 cumulatives[event[:call]][:duration] += event[:duration].to_f
+                 cumulatives[event[:call]][:count] += 1
+                 cumulatives[event[:call]][:average] = cumulatives[event[:call]][:duration].to_f / cumulatives[event[:call]][:count].to_f
+                 corrections.size.times do |i|
+                   event[:depth] <= corrections[0] ? corrections.shift : break
+                 end
 if last_depth.to_i < event[:depth] - corrections.size %>
 <div class="group"><% if threshold && comment_depth.nil? && last_duration && last_duration < threshold %><% comment_depth = event[:depth] - corrections.size %><%= "\n<!--" %><% end %><% else
 close_tags = ((event[:depth] - corrections.size + 1)..last_depth.to_i).collect do |depth|
@@ -73,7 +76,7 @@ end.reverse.join("")
 <div>
 <span class="time"><%= "%.6f" % event[:time] %></span>
 <span class="duration"><%= event[:duration] ? ("%.6f" % event[:duration]) : "?" %></span>
-<span style="padding-left: <%= 10 * (event[:depth] - corrections.size) %>px"><% if (next_event = events[index + 1]) && next_event[:depth] > event[:depth] %><a class="toggler" href="#" onclick="return false"><%= event[:call] %></a><% else %><%= event[:call] %><% end %></span>
+<span style="padding-left: <%= 10 * (event[:depth] - corrections.size) %>px"><% if (next_event = events[index + 1]) && next_event[:depth] > event[:depth] %><a class="toggler" href="#" onclick="return false"><%= event[:call].gsub(/^"(.*)"$/){ "<strong>#{$1}</strong>" } %></a><% else %><%= event[:call].gsub(/^"(.*)"$/){ "<strong>#{$1}</strong>" } %><% end %></span>
 </div><%
 last_depth = event[:depth] - corrections.size
 last_duration = event[:duration]
@@ -102,7 +105,7 @@ end.reverse.join("")
 <span class="average" abbr="<%= "%.6f" % stats[:average] %>"><%= "%.6f" % stats[:average] %></span>
 <span class="duration" abbr="<%= "%.6f" % stats[:duration] %>"><%= "%.6f" % stats[:duration] %></span>
 <span class="count" abbr="<%= stats[:count] %>"><%= stats[:count] %></span>
-<span class="call" abbr="<%= call.gsub("<", "&lt;").gsub(">", "&gt;") %>"><%= call.gsub("<", "&lt;").gsub(">", "&gt;") %></span>
+<span class="call" abbr="<%= call.gsub("<", "&lt;").gsub(">", "&gt;") %>"><%= call.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/^"(.*)"$/){ "<strong>#{$1}</strong>" } %></span>
 </div><% end %>
             </div>
           </div>

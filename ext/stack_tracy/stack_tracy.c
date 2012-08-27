@@ -101,7 +101,7 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
   info.method = (ID *) id;
 
   if (info.method != NULL) {
-    info.object = (VALUE *)(singleton ? self : klass);
+    info.object = (VALUE *)(singleton || (klass == rbString && id == rbTracy) ? self : klass);
 
     if (info.object) {
       for (i = 0; i < exclude_size; i++) {
@@ -205,6 +205,8 @@ VALUE stack_tracy_stop(VALUE self) {
 void Init_stack_tracy() {
   mStackTracy = rb_const_get(rb_cObject, rb_intern("StackTracy"));
   cEventInfo = rb_const_get(mStackTracy, rb_intern("EventInfo"));
+  rbString = rb_path2class("String");
+  rbTracy = rb_intern("tracy");
   rb_define_singleton_method(mStackTracy, "_start", stack_tracy_start, 2);
   rb_define_singleton_method(mStackTracy, "_stop", stack_tracy_stop, 0);
 }

@@ -51,7 +51,11 @@ module StackTracy
     end
 
     def call
-      "#{object}#{singleton ? "." : "#"}#{method}"
+      if method == "tracy" && object.is_a?(String)
+        "\"#{object}\""
+      else
+        "#{object}#{singleton ? "." : "#"}#{method}"
+      end
     end
 
   private

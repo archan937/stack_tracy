@@ -25,7 +25,7 @@ module Unit
       it "should be configurable" do
         StackTracy.config do |c|
           assert_equal true, c.is_a?(Struct)
-          assert_equal [:dump_dir, :dump_source_location, :limit, :threshold, :only, :exclude], c.members
+          assert_equal [:dump_dir, :dump_source_location, :limit, :threshold, :messages_only, :slows_only, :only, :exclude], c.members
           c.only = "Kernel"
           c.exclude = ["IO", "String"]
         end
@@ -152,6 +152,41 @@ module Unit
         end
 
         assert_equal true, StackTracy.stack_trace.empty?
+      end
+
+      it "should be able to trace messages" do
+        stack_tracy do
+          "Doing something".tracy
+        end
+        string_file = File.expand_path "../../../lib/stack_tracy/core_ext/string.rb", __FILE__
+
+        assert_equal [
+          {:event => "call", :file => string_file, :line => 2, :singleton => false, :object => "Doing something", :method => "tracy", :call => "\"Doing something\"", :depth => 0}
+        ], StackTracy.select.collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            assert hash.delete(:duration)
+            hash.delete(:time)
+          end
+        }
+
+        stack_tracy do
+          "Doing something".tracy do
+            "".gsub "foo", "bar"
+          end
+        end
+        file, line = __FILE__, __LINE__ - 3
+
+        assert_equal [
+          {:event => "call", :file => string_file, :line => 2, :singleton => false, :object => "Doing something", :method => "tracy", :call => "\"Doing something\"", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => String, :method => "gsub", :call => "String#gsub", :depth => 1}
+        ], StackTracy.select.collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            assert hash.delete(:duration)
+            hash.delete(:time)
+          end
+        }
       end
 
       it "should filter methods as expected" do

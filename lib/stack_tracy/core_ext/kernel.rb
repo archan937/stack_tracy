@@ -5,8 +5,6 @@ module Kernel
       options = arg
       arg = nil
     end
-    threshold = options.delete :threshold
-    limit = options.delete :limit
     StackTracy.start options
     yield
     StackTracy.stop
@@ -16,7 +14,7 @@ module Kernel
       StackTracy.dump
     elsif arg == :open
       StackTracy.dump do |file|
-        StackTracy.open file, true, threshold, limit
+        StackTracy.open file, true, options
       end
     elsif arg.is_a? String
       StackTracy.dump arg

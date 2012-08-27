@@ -23,6 +23,8 @@ typedef struct ruby_class_t {
 
 static VALUE mStackTracy;
 static VALUE cEventInfo;
+static VALUE rbString;
+static ID rbTracy;
 
 static EventInfo *stack;
 static RubyClass *only;
