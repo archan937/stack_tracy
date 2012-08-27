@@ -80,9 +80,9 @@ A couple of examples:
 * `:only => "Foo* Kernel"` records `Foo`, `Foo::Bar`, `Foo::CandyBar` and `Kernel`
 * `:exclude => :core` records everything except for Ruby core classes and modules (see [stack_tracy.rb](https://github.com/archan937/stack_tracy/blob/master/lib/stack_tracy.rb#L16) for more details)
 
-### Add trace messages
+### Adding trace messages
 
-Sometimes you want to add marks to the stack tree in order to recognize certain events. You can do this by adding trace messages by using the `String#tracy` method:
+Sometimes you want to add marks to the stack tree in order to recognize certain events. You can do this by adding trace messages with the `String#tracy` method:
 
     [1] pry(main)> stack_tracy(:print) do
     [1] pry(main)*   "Putting string".tracy
@@ -139,7 +139,7 @@ When the amount of calls within the stack trace exceeds the specified `:limit`, 
 
 When applying the `:threshold`, calls with a duration **below** the `:threshold` will be folded at default within the stack tree which saves **a lot** of heavy browser rendering on page load as the 'child calls' will be rendered as comment. See [this commit](https://github.com/archan937/stack_tracy/commit/0bb49669015b44cd24715988bf9f7e4cf03a5dad) for more information.
 
-As of version v0.1.5, `StackTracy.open` (and thus the CLI) is provided with the options `:messages_only` and `:slows_only`. When having set `:messages_only` to `true`, the display stack tree will only include trace messages. If you have set `:slows_only` to `true`, then the stack tree will only include slow calls (duration > threshold) **and** trace messages.
+As of version v0.1.5, `StackTracy.open` (and thus the CLI) is provided with the options `:messages_only` and `:slows_only`. When having set `:messages_only` to `true`, the stack tree will only include trace messages. If you have set `:slows_only` to `true`, then the stack tree will only include slow calls (duration > threshold) **and** trace messages.
 
 ### Using recorded stack events
 
