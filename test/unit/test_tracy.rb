@@ -187,6 +187,24 @@ module Unit
             hash.delete(:time)
           end
         }
+
+        stack_tracy :only => "Kernel" do
+          "Doing something".tracy do
+            puts "testing"
+          end
+        end
+        file, line = __FILE__, __LINE__ - 3
+
+        assert_equal [
+          {:event => "call", :file => string_file, :line => 2, :singleton => false, :object => "Doing something", :method => "tracy", :call => "\"Doing something\"", :depth => 0},
+          {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 1}
+        ], StackTracy.select.collect{ |event_info|
+          event_info.to_hash.tap do |hash|
+            assert hash.delete(:nsec)
+            assert hash.delete(:duration)
+            hash.delete(:time)
+          end
+        }
       end
 
       it "should filter methods as expected" do

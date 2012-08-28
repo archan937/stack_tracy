@@ -68,7 +68,7 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
 #endif
 {
   int i;
-  bool singleton = false, match = false;
+  bool singleton = false, trace_message = false, match = false;
   EventInfo info;
 
   if (event == RUBY_EVENT_CALL || event == RUBY_EVENT_C_CALL) {
@@ -101,22 +101,25 @@ static void stack_tracy_trap(rb_event_flag_t event, NODE *node, VALUE self, ID i
   info.method = (ID *) id;
 
   if (info.method != NULL) {
-    info.object = (VALUE *)(singleton || (klass == rbString && id == rbTracy) ? self : klass);
+    trace_message = klass == rbString && id == rbTracy;
+    info.object = (VALUE *)(singleton || trace_message ? self : klass);
 
     if (info.object) {
-      for (i = 0; i < exclude_size; i++) {
-        if (((VALUE) exclude[i].klass) == (VALUE) info.object) {
-          return;
+      if (!trace_message) {
+        for (i = 0; i < exclude_size; i++) {
+          if (((VALUE) exclude[i].klass) == (VALUE) info.object) {
+            return;
+          }
         }
-      }
 
-      if (only_size > 0) {
-        match = false;
-        for (i = 0; i < only_size; i++) {
-          match = match || (((VALUE) only[i].klass) == (VALUE) info.object);
-        }
-        if (!match) {
-          return;
+        if (only_size > 0) {
+          match = false;
+          for (i = 0; i < only_size; i++) {
+            match = match || (((VALUE) only[i].klass) == (VALUE) info.object);
+          }
+          if (!match) {
+            return;
+          }
         }
       }
 
