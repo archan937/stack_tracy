@@ -22,7 +22,7 @@ StackTracy = (function() {
   });
 
   return {
-    version: "0.1.5",
+    version: "0.1.6",
     sort: function(column) {
       sortation[column] = sortation[column] == "asc" ? "desc" : "asc";
       $("#cumulatives>.body>div").tsort("span:eq(" + column + ")[abbr]", {

@@ -1,5 +1,9 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.6 (August 28, 2012)
+
+* Always logging trace messages (despite of the :only and/or :exclude options)
+
 == Version 0.1.5 (August 28, 2012)
 
 * Being able to add trace messages for recognition of executed code (use +String.tracy+)
