@@ -1,7 +1,7 @@
 if (typeof(StackTracy) == "undefined") {
 
 StackTracy = (function() {
-  var sortation = [];
+  var sortation = {cumulatives: [], realtime_cumulatives: []};
 
   var toggle = function(event) {
     var group = $(event.target).closest("div").next("div.group");
@@ -23,11 +23,11 @@ StackTracy = (function() {
 
   return {
     version: "0.1.6",
-    sort: function(column) {
-      sortation[column] = sortation[column] == "asc" ? "desc" : "asc";
-      $("#cumulatives>.body>div").tsort("span:eq(" + column + ")[abbr]", {
+    sort: function(section, column) {
+      sortation[section][column] = sortation[section][column] == "asc" ? "desc" : "asc";
+      $("#" + section + ">.body>div").tsort("span:eq(" + column + ")[abbr]", {
         sortFunction: function(a, b) {
-          var order = (sortation[column] == "asc") ? 1 : -1;
+          var order = (sortation[section][column] == "asc") ? 1 : -1;
           var av = column == 3 ? a.s : parseFloat(a.s);
           var bv = column == 3 ? b.s : parseFloat(b.s);
           if (av === bv) {

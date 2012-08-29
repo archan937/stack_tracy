@@ -88,7 +88,8 @@ a {
   *display: inline;
   zoom: 1; }
 
-#page #cumulatives div span.count {
+#page #cumulatives div span.count,
+#page #realtime_cumulatives div span.count {
   width: 45px; }
 
 #footer {
