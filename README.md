@@ -384,7 +384,7 @@ Also, you can determine what StackTracy has to do after the request has finished
 
 This will immediately open the stack tree in your default browser after every traced request:
 
-    use StackTracy::Sinatra, :open do
+    use StackTracy::Sinatra, :open do |path, params|
       path == "/paul/engel" #=> only trace and open stack tree when opening "http://localhost:4567/paul/engel"
     end
 
