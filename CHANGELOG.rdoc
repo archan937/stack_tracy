@@ -1,5 +1,9 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.7 (August 30, 2012)
+
+* Added 'realtime' cumulatives tab within the stack tree HTML page ^^
+
 == Version 0.1.6 (August 28, 2012)
 
 * Always logging trace messages (despite of the :only and/or :exclude options)
