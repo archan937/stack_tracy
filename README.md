@@ -399,7 +399,7 @@ The StackTracy repo is provided with `script/console` which you can use for deve
 Run the following command in your console:
 
     $ script/console
-    Loading development environment (StackTracy 0.1.7)
+    Loading development environment (StackTracy 0.1.8)
     [1] pry(main)> stack_tracy :print do
     [1] pry(main)*   puts "testing"
     [1] pry(main)* end
