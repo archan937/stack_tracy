@@ -68,7 +68,7 @@
                    event[:depth] <= corrections[0] ? corrections.shift : break
                  end
 
-                 stack = stack[0, event[:depth] - corrections.size]
+                 stack = stack[0, event[:depth] - corrections.size] || []
                  unless stack.include? event[:call]
                    cumulative[:real_duration] += event[:duration].to_f
                    cumulative[:real_count] += 1
