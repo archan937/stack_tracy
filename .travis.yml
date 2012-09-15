@@ -1,0 +1,8 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 1.9.2
+  - 1.8.7
+  - ree
+before_script:
+  - cd ~/builds/archan937/stack_tracy/ext/stack_tracy && ruby extconf.rb && make

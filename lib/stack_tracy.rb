@@ -1,5 +1,5 @@
+require RUBY_VERSION == "1.8.7" ? "fastercsv" : "csv"
 require "erb"
-require "csv"
 require "tmpdir"
 require "securerandom"
 require "rich/support/core/string/colorize"
@@ -14,7 +14,7 @@ module StackTracy
   extend self
 
   PRESETS = {
-    :core => "Array BasicObject Enumerable Fixnum Float Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+    :core => "Array #{"BasicObject " unless RUBY_VERSION == "1.8.7"}Enumerable Fixnum Float Hash IO Integer Kernel Module #{"Mutex " unless RUBY_VERSION == "1.8.7"}Numeric Object Rational String Symbol Thread Time",
     :active_record => "ActiveRecord::Base",
     :data_mapper => "DataMapper::Resource"
   }
@@ -74,7 +74,7 @@ module StackTracy
     File.expand_path(path).tap do |path|
       bool = dump_source_location.nil? ? @options[:dump_source_location] : dump_source_location
       keys = [:event, (:file if bool), (:line if bool), :singleton, :object, :method, :nsec, :time, :call, :depth, :duration]
-      CSV.open(path, "w", :col_sep => ";") do |file|
+      (RUBY_VERSION == "1.8.7" ? FasterCSV : CSV).open(path, "w", :col_sep => ";") do |file|
         file << keys
         select(only).each do |event|
           file << event.values_at(*keys)

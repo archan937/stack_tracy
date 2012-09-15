@@ -11,6 +11,14 @@ module Unit
         end
       end
 
+      def correct(array)
+        if RUBY_VERSION == "1.8.7"
+          array.delete_if{|x| x[:call] == "IO#puts"}
+          array.each{|x| x[:depth] -= 1 if x[:depth] && x[:call] == "IO#write"}
+        end
+        array
+      end
+
       it "should respond to methods as expected" do
         assert StackTracy.respond_to?(:config)
         assert StackTracy.respond_to?(:start)
@@ -25,7 +33,7 @@ module Unit
       it "should be configurable" do
         StackTracy.config do |c|
           assert_equal true, c.is_a?(Struct)
-          assert_equal [:dump_dir, :dump_source_location, :limit, :threshold, :messages_only, :slows_only, :only, :exclude], c.members
+          assert_equal %w(dump_dir dump_source_location limit threshold messages_only slows_only only exclude), c.members.collect(&:to_s)
           c.only = "Kernel"
           c.exclude = ["IO", "String"]
         end
@@ -36,10 +44,17 @@ module Unit
         assert_equal({:only => "Paul", :exclude => "Foo"}, StackTracy.send(:merge_options, {"only" => "Paul", "exclude" => "Foo"}))
         assert_equal({:only => nil, :exclude => nil}, StackTracy.send(:merge_options, {:only => nil, :exclude => nil}))
 
-        assert_equal(
-          "Array BasicObject Enumerable Fixnum Float Foo Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
-          StackTracy.send(:mod_names, [:core, "Foo"])
-        )
+        if RUBY_VERSION == "1.8.7"
+          assert_equal(
+            "Array Enumerable Fixnum Float Foo Hash IO Integer Kernel Module Numeric Object Rational String Symbol Thread Time",
+            StackTracy.send(:mod_names, [:core, "Foo"]).strip
+          )
+        else
+          assert_equal(
+            "Array BasicObject Enumerable Fixnum Float Foo Hash IO Integer Kernel Module Mutex Numeric Object Rational String Symbol Thread Time",
+            StackTracy.send(:mod_names, [:core, "Foo"])
+          )
+        end
 
         assert_equal(
           "ActiveRecord::Base",
@@ -59,7 +74,7 @@ module Unit
         file, line = __FILE__, __LINE__ - 2
         st = File.expand_path("../../../lib/stack_tracy.rb", __FILE__)
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO        , :method => "puts" , :call => "IO#puts"         },
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO        , :method => "write", :call => "IO#write"        },
@@ -70,7 +85,7 @@ module Unit
           {:event => "c-return", :file => file, :line => line, :singleton => false, :object => Kernel    , :method => "puts" , :call => "Kernel#puts"     },
           {:event => "call"    , :file => st  , :line => 35  , :singleton => false, :object => StackTracy, :method => "stop" , :call => "StackTracy#stop" },
           {:event => "c-call"  , :file => st  , :line => 36  , :singleton => 0    , :object => StackTracy, :method => "_stop", :call => "StackTracy._stop"}
-        ], StackTracy.stack_trace.collect{ |event_info|
+        ]), StackTracy.stack_trace.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             hash.delete(:time)
@@ -116,12 +131,12 @@ module Unit
         end
         file, line = __FILE__, __LINE__ - 2
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2},
           {:event => "c-call"  , :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2}
-        ], StackTracy.select.collect{ |event_info|
+        ]), StackTracy.select.collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
@@ -213,12 +228,12 @@ module Unit
         end
         file, line = __FILE__, __LINE__ - 2
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts" , :call => "Kernel#puts", :depth => 0},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts" , :call => "IO#puts"    , :depth => 1},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "write", :call => "IO#write"   , :depth => 2}
-        ], StackTracy.select("*").collect{ |event_info|
+        ]), StackTracy.select("*").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
@@ -236,11 +251,11 @@ module Unit
           end
         }
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
-        ], StackTracy.select("IO").collect{ |event_info|
+        ]), StackTracy.select("IO").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
@@ -248,11 +263,11 @@ module Unit
           end
         }
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
-        ], StackTracy.select("IO*").collect{ |event_info|
+        ]), StackTracy.select("IO*").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
@@ -265,11 +280,11 @@ module Unit
           event_info.to_hash
         }
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "puts" , :call => "IO#puts" , :depth => 0},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO, :method => "write", :call => "IO#write", :depth => 1}
-        ], StackTracy.select("IO#").collect{ |event_info|
+        ]), StackTracy.select("IO#").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)
@@ -299,10 +314,10 @@ module Unit
           end
         }
 
-        assert_equal [
+        assert_equal correct([
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => Kernel, :method => "puts", :call => "Kernel#puts", :depth => 0},
           {:event => "c-call", :file => file, :line => line, :singleton => false, :object => IO    , :method => "puts", :call => "IO#puts"    , :depth => 1}
-        ], StackTracy.select("*#puts").collect{ |event_info|
+        ]), StackTracy.select("*#puts").collect{ |event_info|
           event_info.to_hash.tap do |hash|
             assert hash.delete(:nsec)
             assert hash.delete(:duration)

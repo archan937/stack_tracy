@@ -18,4 +18,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "rich_support", "~> 0.1.2"
   gem.add_dependency "launchy", "2.1.0"
   gem.add_dependency "thor"
+  gem.add_dependency "fastercsv"
 end

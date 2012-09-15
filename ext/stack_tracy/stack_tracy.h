@@ -6,6 +6,13 @@
 #include <time.h>
 #include <string.h>
 
+#ifndef RUBY_VM
+#include <node.h>
+typedef rb_event_t rb_event_flag_t;
+#define rb_sourcefile() (node ? node->nd_file : 0)
+#define rb_sourceline() (node ? nd_line(node) : 0)
+#endif
+
 typedef struct event_info_t {
   rb_event_flag_t event;
   const char *file;

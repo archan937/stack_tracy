@@ -1,4 +1,4 @@
-# StackTracy
+# StackTracy [![Build Status](https://secure.travis-ci.org/archan937/stack_tracy.png)](http://travis-ci.org/archan937/stack_tracy)
 
 Investigate and detect slow methods within the stack trace of your Ruby (optionally Sinatra) application
 
