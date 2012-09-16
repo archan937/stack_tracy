@@ -1,5 +1,9 @@
 = StackTracy CHANGELOG
 
+== Version 0.1.9 (September 17, 2012)
+
+* Made StackTracy compatible with Ruby 1.8.7 and REE
+
 == Version 0.1.8 (August 30, 2012)
 
 * Corrected index.html.erb regarding a possible nil value error
