@@ -12,7 +12,7 @@ end
 
 group :gem_test do
   gem "minitest"
-  gem "mocha"
+  gem "mocha", "0.12.3"
   gem "pry"
   gem "rake"
 end
