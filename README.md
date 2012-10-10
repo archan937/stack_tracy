@@ -122,7 +122,7 @@ You can also encapsulate trace messages by executing code within a block:
 
 You can configure `StackTracy` regarding the default stack tree reduction behaviour, its dump directory and whether to include the source location when dumping recorded stack events:
 
-    StackTracy.configure do |c|
+    StackTracy.config do |c|
       c.dump_dir             = "."                        #=> default: Dir::tmpdir
       c.dump_source_location = "."                        #=> default: false
       c.limit                = 1000                       #=> default: 7500
