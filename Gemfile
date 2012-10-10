@@ -11,7 +11,7 @@ group :gem_development do
 end
 
 group :gem_test do
-  gem "minitest"
+  gem "minitest", "3.3.0"
   gem "mocha", "0.12.3"
   gem "pry"
   gem "rake"
