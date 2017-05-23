@@ -8,7 +8,7 @@ StackTracy is created for simply investigating your stack trace for called metho
 
 The gem is partly written in C to reduce the application performance as minimal as possible.
 
-![Dick .. Stack Tracy](http://codehero.es/images/stack_tracy.jpg)
+[![Dick .. Stack Tracy](https://slack-imgs.com/?c=1&o1=wi400.he250&url=http%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F330722020.jpg)](https://vimeo.com/archan937/stacktracy)
 
 Watch the ["**Using StackTracy within a small Sinatra application**"](https://vimeo.com/archan937/stacktracy) **screencast** to see StackTracy in action!
 
